@@ -2,8 +2,8 @@
   HyperCubeGroup.Tikhonov
 
   Existence of global minimisers via Tikhonov regularisation
-  (Manuscript Appendix: "Global Existence via Tikhonov Regularization" /
-  Theorem 18).
+  This is additional repository infrastructure, not an active numbered
+  statement in the updated manuscript.
 
   ## Main results
 
@@ -622,12 +622,12 @@ deferred here because they require a substantial chunk of additional
 boilerplate. The existence theorem above is ready to consume them
 once instantiated. -/
 
-/-! ## Theorem 18: Existence for Regularized Objective -/
+/-! ## Theorem: Existence for Regularized Objective -/
 
-/-- **Theorem 18 (Existence for Regularized Objective).** For any `ε > 0` and
+/-- **Theorem (Existence for Regularized Objective).** For any `ε > 0` and
     any feasible factorisation, the regularised objective
     `ℋ(Θ).re + ε‖Θ‖²` achieves its minimum on the feasible set. -/
-theorem theorem18_regularized_existence (f : BinOp n) (eps : ℝ) (h_eps : 0 < eps)
+theorem regularized_existence (f : BinOp n) (eps : ℝ) (h_eps : 0 < eps)
     (Θ_0 : HCParams n) (h_feas_0 : Factorizes Θ_0 f) :
     ∃ Θ_min : HCParams n, Factorizes Θ_min f ∧
       ∀ Θ' : HCParams n, Factorizes Θ' f →

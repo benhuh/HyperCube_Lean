@@ -1,7 +1,7 @@
 /-
   HyperCubeGroup.MatrixAMGM
 
-  The Matrix AM-GM inequality (Lemma 16),
+  The Matrix AM-GM inequality,
   specialised to the case `tr(XYZ) = 1`. This is the irreducible
   "textbook input" from which the unconditional lower bound
   `ℋ(Θ) ≥ 3n²` and its equality rigidity follow on any quasigroup.
@@ -10,11 +10,11 @@
 
     * `matrix_amgm_at_one`         — proved (Tier 2A complete) via
         Schur triangulation of the 3n×3n block-cyclic matrix.
-    * `matrix_amgm_at_one_equality` — axiom (the equality side; proof
-        via SVD of the upper-triangular Schur factor still pending).
+    * `matrix_amgm_at_one_equality` — proved via the equality case
+      of the upper-triangular Schur trace bound.
 
   The full proof is in `BlockCyclic.lean` and `Spectral.lean`:
-    * `matrix_unitary_schur_form` (axiom, classical linear algebra)
+    * `matrix_unitary_schur_form` (proved)
     * `IsUpperTriangular.norm_trace_cubed_pow_four_le` (proved)
     * `frobNormSq_F_unitary_conj_sq`, `trace_unitary_conj_cb` (proved)
     * `frobNormSq_F_blockCyclicFin_sq`, `trace_blockCyclicFin_cb` (proved)
@@ -268,11 +268,11 @@ theorem matrix_amgm_at_one_equality
   have hXYZ_one := (blockCyclicFin_cb_eq_one_iff X Y Z).mp hM3_id
   exact ⟨hXYZ_unit.1, hXYZ_unit.2.1, hXYZ_unit.2.2, hXYZ_one.1⟩
 
-/-! ## Manuscript Lemma 16 -/
+/-! ## Manuscript Matrix AM-GM -/
 
-/-- **Lemma 16 (Matrix AM-GM)** of the manuscript at the unit-normalised-trace
+/-- **Matrix AM-GM** of the manuscript at the unit-normalised-trace
     case: `‖XY‖² + ‖YZ‖² + ‖ZX‖² ≥ 3` whenever `tr(XYZ) = 1`. -/
-theorem lemma16_matrix_amgm
+theorem matrix_amgm
     (X Y Z : Matrix (Fin n) (Fin n) ℂ)
     (h : (1 / (n : ℂ)) * (X * Y * Z).trace = 1) :
     (frobNormSq (X * Y)).re +
@@ -280,9 +280,9 @@ theorem lemma16_matrix_amgm
     (frobNormSq (Z * X)).re ≥ 3 :=
   matrix_amgm_at_one X Y Z h
 
-/-- **Lemma 16 equality side.** Equality in the matrix AM-GM at unit normalised
+/-- **Matrix AM-GM equality side.** Equality in the matrix AM-GM at unit normalised
     trace forces `X, Y, Z` to be unitary and `XYZ = I`. -/
-theorem lemma16_matrix_amgm_equality
+theorem matrix_amgm_equality
     (X Y Z : Matrix (Fin n) (Fin n) ℂ)
     (h : (1 / (n : ℂ)) * (X * Y * Z).trace = 1)
     (heq : (frobNormSq (X * Y)).re +

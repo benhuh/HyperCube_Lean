@@ -7,7 +7,7 @@
   - Definition 4 (Inverse-Scale Penalty): ℬ_δ(Θ) = Σ δ_abc |T_abc|² (1/‖A_a‖² + 1/‖B_b‖² + 1/‖C_c‖²)
   - Definition 4 (Misalignment Penalty): ℛ_δ(Θ) = Σ δ_abc (‖Δ^(A)_abc‖² + ‖Δ^(B)_abc‖² + ‖Δ^(C)_abc‖²)
     where Δ^(A)_abc = (B_b C_c)† - T*_abc A_a / ‖A_a‖²
-  - Lemma 1 (Decomposition of ℋ): ℋ(Θ) = ℬ_δ(Θ) + ℛ_δ(Θ) with ℛ_δ(Θ) ≥ 0,
+  - Lemma (Decomposition of ℋ): ℋ(Θ) = ℬ_δ(Θ) + ℛ_δ(Θ) with ℛ_δ(Θ) ≥ 0,
     and ℛ_δ(Θ) = 0 iff perfect collinearity holds.
 -/
 
@@ -454,9 +454,9 @@ theorem misalignmentPenalty_nonneg (Θ : HCParams n) (f : BinOp n) :
     have h3 := frobNormSq_nonneg (misalignmentResidualC Θ a b (f.op a b))
     linarith))
 
-/-! ## Lemma 1: Decomposition of ℋ -/
+/-! ## Lemma: Decomposition of ℋ -/
 
-/-  **Lemma 1 (Decomposition of ℋ).**
+/-  **Lemma (Decomposition of ℋ).**
     For any parameters Θ and target δ, the objective decomposes as
     ℋ(Θ) = ℬ_δ(Θ) + ℛ_δ(Θ).
     Consequently, ℋ(Θ) ≥ ℬ_δ(Θ), with equality iff ℛ_δ(Θ) = 0.
@@ -559,7 +559,7 @@ private theorem pythagoras_C (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerat
   field_simp
   ring
 
-theorem lemma1_decomposition (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ) :
+theorem decomposition (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ) :
     objective Θ f = inverseScalePenalty Θ f + misalignmentPenalty Θ f := by
   -- Reduce objective to sum over support
   rw [objective_eq_sum_support]
@@ -576,10 +576,10 @@ theorem lemma1_decomposition (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerat
   ring
 
 /-- ℋ(Θ) ≥ ℬ_δ(Θ), with equality iff R = 0 (perfect collinearity). -/
-theorem lemma1_objective_ge_inverseScalePenalty (Θ : HCParams n) (f : BinOp n)
+theorem objective_ge_inverseScalePenalty (Θ : HCParams n) (f : BinOp n)
     (hnd : Nondegenerate Θ) :
     (objective Θ f).re ≥ (inverseScalePenalty Θ f).re := by
-  have hdecomp := lemma1_decomposition Θ f hnd
+  have hdecomp := decomposition Θ f hnd
   have hRnonneg := misalignmentPenalty_nonneg Θ f
   rw [hdecomp]
   simp only [Complex.add_re]

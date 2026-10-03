@@ -1,7 +1,7 @@
 /-
   HyperCubeGroup.Spectral
 
-  Spectral-theory lemmas used by the Matrix AM-GM proof (Lemma 16).
+  Spectral-theory lemmas used by the Matrix AM-GM proof (Lemma).
 
   This file fully mechanises the unitary Schur triangulation
   (`matrix_unitary_schur_form`) from scratch via induction on dimension,

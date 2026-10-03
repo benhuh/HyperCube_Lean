@@ -17,11 +17,9 @@
   lines and best approached as its own focused sub-project after the
   Tikhonov existence theorem (Tier 3A) is in place.
 
-  Why it matters: the manuscript's Tikhonov existence theorem
-  (`thm:app_regularized_existence`, Theorem 27) and the empirical
-  coercivity discussion in Appendix F use these bounds to argue that
-  gradient descent on `H` converges globally to the optimal manifold
-  (no spurious local minima beyond gauge orbits). Without coercivity,
+  Why it matters: these bounds support the additional Tikhonov existence
+  infrastructure and the gauge-quotient landscape results. They do not
+  establish global convergence of gradient descent. Without coercivity,
   even with global minimum existence (Tier 3A), optimisation could
   stall on flat directions or saddle structures.
 -/
@@ -691,11 +689,11 @@ theorem misalignmentPenalty_unitaryConjAction (U : Matrix (Fin n) (Fin n) ℂ)
   have h_ip : inverseScalePenalty (unitaryConjAction U Θ) f = inverseScalePenalty Θ f :=
     inverseScalePenalty_unitaryConjAction U hU Θ f
   have h_dec : objective Θ f = inverseScalePenalty Θ f + misalignmentPenalty Θ f :=
-    lemma1_decomposition Θ f hnd
+    decomposition Θ f hnd
   have h_dec' : objective (unitaryConjAction U Θ) f =
       inverseScalePenalty (unitaryConjAction U Θ) f +
       misalignmentPenalty (unitaryConjAction U Θ) f :=
-    lemma1_decomposition (unitaryConjAction U Θ) f hnd'
+    decomposition (unitaryConjAction U Θ) f hnd'
   -- Combining: ip + misalign' = obj' = obj = ip + misalign, hence misalign' = misalign.
   have key : inverseScalePenalty Θ f + misalignmentPenalty (unitaryConjAction U Θ) f =
       inverseScalePenalty Θ f + misalignmentPenalty Θ f := by
@@ -1302,11 +1300,11 @@ theorem misalignmentPenalty_uniformScale_cubeRoot (t : ℂ) (ht : t ^ 3 = 1)
   have h_ip : inverseScalePenalty (uniformScale t Θ) f = inverseScalePenalty Θ f :=
     inverseScalePenalty_uniformScale_cubeRoot t ht Θ f
   have h_dec : objective Θ f = inverseScalePenalty Θ f + misalignmentPenalty Θ f :=
-    lemma1_decomposition Θ f hnd
+    decomposition Θ f hnd
   have h_dec' : objective (uniformScale t Θ) f =
       inverseScalePenalty (uniformScale t Θ) f +
       misalignmentPenalty (uniformScale t Θ) f :=
-    lemma1_decomposition (uniformScale t Θ) f hnd'
+    decomposition (uniformScale t Θ) f hnd'
   -- Combine: ip + misalign' = obj' = obj = ip + misalign, hence misalign' = misalign.
   have key : inverseScalePenalty Θ f + misalignmentPenalty (uniformScale t Θ) f =
       inverseScalePenalty Θ f + misalignmentPenalty Θ f := by
@@ -1481,11 +1479,11 @@ theorem misalignmentPenalty_unit_gauge (sA sB sC : Fin n → ℂ)
   have h_ip : inverseScalePenalty (gaugeAction sA sB sC Θ) f = inverseScalePenalty Θ f :=
     inverseScalePenalty_unit_gauge sA sB sC hA hB hC Θ f
   have h_dec : objective Θ f = inverseScalePenalty Θ f + misalignmentPenalty Θ f :=
-    lemma1_decomposition Θ f hnd
+    decomposition Θ f hnd
   have h_dec' : objective (gaugeAction sA sB sC Θ) f =
       inverseScalePenalty (gaugeAction sA sB sC Θ) f +
       misalignmentPenalty (gaugeAction sA sB sC Θ) f :=
-    lemma1_decomposition (gaugeAction sA sB sC Θ) f hnd'
+    decomposition (gaugeAction sA sB sC Θ) f hnd'
   have key : inverseScalePenalty Θ f + misalignmentPenalty (gaugeAction sA sB sC Θ) f =
       inverseScalePenalty Θ f + misalignmentPenalty Θ f := by
     calc inverseScalePenalty Θ f + misalignmentPenalty (gaugeAction sA sB sC Θ) f
@@ -2677,7 +2675,7 @@ theorem inverseScalePenalty_re_lower_bound_on_combinedGaugeOrbit
 /-- AM-GM lower bound at the level of the feasibility-preserving gauge quotient:
     for a UnitaryCollinear factorisation, the (lifted) inverseScalePenalty's real part
     is at least `3n²`. -/
-theorem lemma6_collinear_lower_bound_feasibleQuotient {f : BinOp n} (hq : _root_.IsQuasigroup f)
+theorem collinear_lower_bound_feasibleQuotient {f : BinOp n} (hq : _root_.IsQuasigroup f)
     (q : FeasibleCombinedGaugeQuotient n f)
     (huc : FeasibleCombinedGaugeQuotient.UnitaryCollinear q) :
     3 * (n : ℝ) ^ 2 ≤ (FeasibleCombinedGaugeQuotient.inverseScalePenalty q).re := by
@@ -2691,7 +2689,7 @@ theorem lemma6_collinear_lower_bound_feasibleQuotient {f : BinOp n} (hq : _root_
       A_pos := fun a => by rw [frobNormSq_unitary_eq_one _ (huc'.unitaryA a)]; exact one_ne_zero,
       B_pos := fun b => by rw [frobNormSq_unitary_eq_one _ (huc'.unitaryB b)]; exact one_ne_zero,
       C_pos := fun c => by rw [frobNormSq_unitary_eq_one _ (huc'.unitaryC c)]; exact one_ne_zero }
-    exact lemma6_collinear_lower_bound Θ f hq hnd huc'.collinear huc'.feasible
+    exact collinear_lower_bound Θ f hq hnd huc'.collinear huc'.feasible
 
 /-! ## Gauge actions on the zero element -/
 
@@ -3596,7 +3594,7 @@ theorem unitaryCollinear_inverseScalePenalty_eq_three_n_sq_feasibleQuotient
       C_pos := fun c => by rw [frobNormSq_unitary_eq_one _ (huc'.unitaryC c)]; exact one_ne_zero }
     have h_dec : _root_.objective Θ f =
         _root_.inverseScalePenalty Θ f + _root_.misalignmentPenalty Θ f :=
-      lemma1_decomposition Θ f hnd
+      decomposition Θ f hnd
     have h_misalign : _root_.misalignmentPenalty Θ f = 0 := huc'.collinear
     have h_obj_eq_ip : _root_.objective Θ f = _root_.inverseScalePenalty Θ f := by
       rw [h_dec, h_misalign, add_zero]
@@ -3631,7 +3629,7 @@ theorem inverseScalePenalty_re_ge_3nsq_feasibleQuotient
     (q : FeasibleCombinedGaugeQuotient n f)
     (huc : FeasibleCombinedGaugeQuotient.UnitaryCollinear q) :
     3 * (n : ℝ) ^ 2 ≤ (FeasibleCombinedGaugeQuotient.inverseScalePenalty q).re :=
-  lemma6_collinear_lower_bound_feasibleQuotient hq q huc
+  collinear_lower_bound_feasibleQuotient hq q huc
 
 /-- For UC quotient classes, both `objective.re` and `inverseScalePenalty.re` equal `3n²`. -/
 theorem unitaryCollinear_objective_inverseScalePenalty_both_eq_3nsq_feasibleQuotient
@@ -3643,7 +3641,7 @@ theorem unitaryCollinear_objective_inverseScalePenalty_both_eq_3nsq_feasibleQuot
   exact (unitaryCollinear_inverseScalePenalty_eq_three_n_sq_feasibleQuotient q huc).2
 
 /-- An optimal feasibility-preserving quotient class with a feasibility witness
-    is UnitaryCollinear. Direct consequence of `theorem9_absolute_feasible_bound_rigidity`
+    is UnitaryCollinear. Direct consequence of `absolute_feasible_bound_rigidity`
     (axiom-free). -/
 theorem isOptimal_imp_unitaryCollinear_feasibleQuotient
     {f : BinOp n} (hq : _root_.IsQuasigroup f)
@@ -3655,7 +3653,7 @@ theorem isOptimal_imp_unitaryCollinear_feasibleQuotient
   | _ Θ =>
     show _root_.UnitaryCollinear Θ f
     have hfeas : Factorizes Θ f := hfeas_q
-    exact (theorem9_absolute_feasible_bound_rigidity f hq Θ hfeas).mp hopt
+    exact (absolute_feasible_bound_rigidity f hq Θ hfeas).mp hopt
 
 /-- Iff form: a feasible quotient class is optimal iff it is UnitaryCollinear. -/
 theorem isOptimal_iff_unitaryCollinear_feasibleQuotient
@@ -3669,19 +3667,19 @@ theorem isOptimal_iff_unitaryCollinear_feasibleQuotient
 
 /-- AM-GM lower bound at the feasibility-preserving gauge quotient (general
     case): for any feasible quotient class, the objective.re is at least 3n².
-    Direct lift of `theorem9_absolute_feasible_bound_lower` to the quotient. -/
-theorem theorem9_absolute_feasible_bound_lower_feasibleQuotient
+    Direct lift of `absolute_feasible_bound_lower` to the quotient. -/
+theorem absolute_feasible_bound_lower_feasibleQuotient
     {f : BinOp n} (q : FeasibleCombinedGaugeQuotient n f)
     (hfeas_q : FeasibleCombinedGaugeQuotient.Factorizes q) :
     3 * (n : ℝ) ^ 2 ≤ (FeasibleCombinedGaugeQuotient.objective q).re := by
   induction q using Quotient.ind with
   | _ Θ =>
     show 3 * (n : ℝ) ^ 2 ≤ (_root_.objective Θ f).re
-    exact theorem9_absolute_feasible_bound_lower f Θ hfeas_q
+    exact absolute_feasible_bound_lower f Θ hfeas_q
 
-/-- Strict gap at the gauge-quotient level (Theorem 10 case 2): if `f` is not
+/-- Strict gap at the gauge-quotient level (Theorem case 2): if `f` is not
     a group isotope, every feasible quotient class is strictly above 3n². -/
-theorem theorem10_case2_strict_gap_non_group_feasibleQuotient
+theorem case2_strict_gap_non_group_feasibleQuotient
     {f : BinOp n} (hq : _root_.IsQuasigroup f) (hnotgi : ¬ _root_.IsGroupIsotope f)
     (q : FeasibleCombinedGaugeQuotient n f)
     (hfeas_q : FeasibleCombinedGaugeQuotient.Factorizes q) :
@@ -3700,7 +3698,7 @@ theorem not_isOptimal_of_non_group_feasibleQuotient
     ¬ FeasibleCombinedGaugeQuotient.IsOptimal q := by
   intro hopt
   -- IsOptimal says objective.re = 3n²; strict gap says objective.re > 3n².
-  have h_strict := theorem10_case2_strict_gap_non_group_feasibleQuotient hq hnotgi q hfeas_q
+  have h_strict := case2_strict_gap_non_group_feasibleQuotient hq hnotgi q hfeas_q
   -- `hopt : (q.objective).re = 3 * n²` and `h_strict : (q.objective).re > 3 * n²`
   exact absurd hopt (ne_of_gt h_strict)
 
@@ -3717,7 +3715,7 @@ theorem feasibleQuotient_optimal_or_strict
   · -- IsOptimal is `objective.re = 3n²`. Negation + lower bound gives strict.
     refine Or.inr ?_
     have h_le : 3 * (n : ℝ) ^ 2 ≤ (FeasibleCombinedGaugeQuotient.objective q).re :=
-      theorem9_absolute_feasible_bound_lower_feasibleQuotient q hfeas_q
+      absolute_feasible_bound_lower_feasibleQuotient q hfeas_q
     have h_ne : (FeasibleCombinedGaugeQuotient.objective q).re ≠ 3 * (n : ℝ) ^ 2 := by
       intro heq
       exact hopt heq
@@ -3757,7 +3755,7 @@ theorem isGroupIsotope_imp_exists_isOptimal_feasibleQuotient
     ∃ q : FeasibleCombinedGaugeQuotient n f,
       FeasibleCombinedGaugeQuotient.Factorizes q ∧
       FeasibleCombinedGaugeQuotient.IsOptimal q := by
-  obtain ⟨Θ_opt, huc⟩ := lemma14_group_isotope_admits_unitary_collinear f hq hgi
+  obtain ⟨Θ_opt, huc⟩ := group_isotope_admits_unitary_collinear f hq hgi
   refine ⟨Quotient.mk (feasibleCombinedGaugeSetoid n f) Θ_opt, ?_, ?_⟩
   · -- Factorizes_mk simp lemma
     show _root_.Factorizes Θ_opt f
@@ -3780,12 +3778,12 @@ theorem exists_isOptimal_feasibleQuotient_imp_isGroupIsotope
     have hfeas : _root_.Factorizes Θ f := hfeas_q
     have hH : (_root_.objective Θ f).re = 3 * (n : ℝ) ^ 2 := hopt_q
     have huc : _root_.UnitaryCollinear Θ f :=
-      (theorem9_absolute_feasible_bound_rigidity f hq Θ hfeas).mp hH
+      (absolute_feasible_bound_rigidity f hq Θ hfeas).mp hH
     exact unitary_collinear_implies_group_isotope f hq ⟨Θ, huc⟩
 
-/-- **Theorem 10 at the gauge-quotient level.** Both cases of the manuscript's
+/-- **Theorem at the gauge-quotient level.** Both cases of the manuscript's
     Associativity Gap dichotomy, stated entirely on the gauge quotient. -/
-theorem theorem10_global_optimality_dichotomy_feasibleQuotient {f : BinOp n}
+theorem global_optimality_dichotomy_feasibleQuotient {f : BinOp n}
     (hq : _root_.IsQuasigroup f) :
     (_root_.IsGroupIsotope f →
       ∃ q : FeasibleCombinedGaugeQuotient n f,
@@ -3798,13 +3796,11 @@ theorem theorem10_global_optimality_dichotomy_feasibleQuotient {f : BinOp n}
   refine ⟨?_, ?_⟩
   · exact isGroupIsotope_imp_exists_isOptimal_feasibleQuotient hq
   · intro hnotgi q hfeas_q
-    exact theorem10_case2_strict_gap_non_group_feasibleQuotient hq hnotgi q hfeas_q
+    exact case2_strict_gap_non_group_feasibleQuotient hq hnotgi q hfeas_q
 
-/-- The optimal class is unique up to gauge equivalence: any two UnitaryCollinear
-    feasible quotient classes coincide as quotient elements. (Manuscript Lemma
-    13 in the new numbering, `lem:app_representation_uniqueness`: representation
-    uniqueness via character theory — but here we use the weaker gauge-orbit
-    characterization rather than invoking Lemma 13 directly.) -/
+/-- Any two unitary collinear feasible quotient classes have the same objective
+  value. This does not assert equality of the quotient classes or representation
+  uniqueness (`lem:app_representation_uniqueness`). -/
 theorem unitaryCollinear_classes_share_objective_feasibleQuotient
     {f : BinOp n} (q₁ q₂ : FeasibleCombinedGaugeQuotient n f)
     (huc₁ : FeasibleCombinedGaugeQuotient.UnitaryCollinear q₁)
@@ -3960,8 +3956,8 @@ theorem unitaryCollinear_classes_share_kappaTriple_feasibleQuotient
 
 /-- Optimum value characterization: for a feasible group-isotope `f`, the
     minimum of `ℋ(Θ).re` over feasible Θ equals exactly `3n²`, attained by
-    UnitaryCollinear factorisations. Combines Theorem 9 (Absolute Feasible
-    Bound — both halves: lower bound and equality rigidity) with Theorem 4
+    UnitaryCollinear factorisations. Combines Theorem (Absolute Feasible
+    Bound — both halves: lower bound and equality rigidity) with Theorem
     (UC ⟺ group isotope). -/
 theorem optimum_value_eq_three_n_sq_iff_group_isotope
     (f : BinOp n) (hq : _root_.IsQuasigroup f) :
@@ -3971,10 +3967,10 @@ theorem optimum_value_eq_three_n_sq_iff_group_isotope
   refine ⟨?_, ?_⟩
   · rintro ⟨Θ, hfeas, hH⟩
     have huc : _root_.UnitaryCollinear Θ f :=
-      (theorem9_absolute_feasible_bound_rigidity f hq Θ hfeas).mp hH
+      (absolute_feasible_bound_rigidity f hq Θ hfeas).mp hH
     exact unitary_collinear_implies_group_isotope f hq ⟨Θ, huc⟩
   · intro hgi
-    obtain ⟨Θ_opt, huc⟩ := lemma14_group_isotope_admits_unitary_collinear f hq hgi
+    obtain ⟨Θ_opt, huc⟩ := group_isotope_admits_unitary_collinear f hq hgi
     exact ⟨Θ_opt, huc.feasible, uc_objective_value Θ_opt f huc⟩
 
 
@@ -3992,7 +3988,7 @@ theorem inverseScalePenalty_le_objective_feasibleQuotient
     have hnd := factorizes_implies_nondegenerate Θ f hq hfeas
     have hdec : _root_.objective Θ f =
         _root_.inverseScalePenalty Θ f + _root_.misalignmentPenalty Θ f :=
-      lemma1_decomposition Θ f hnd
+      decomposition Θ f hnd
     have hR_re_nn : 0 ≤ (_root_.misalignmentPenalty Θ f).re := by
       have := misalignmentPenalty_nonneg Θ f
       exact this
@@ -4002,7 +3998,8 @@ theorem inverseScalePenalty_le_objective_feasibleQuotient
     linarith
 
 /-- An IsOptimal class exists on the feasibility-preserving gauge quotient if
-    and only if `f` is a group isotope. Lifts Theorem 10 / 4 to the quotient
+    and only if `f` is a group isotope. Lifts the global optimality and unitary
+    equivalence results to the quotient
     level (axiom-free). -/
 theorem exists_isOptimal_iff_group_isotope_feasibleQuotient
     {f : BinOp n} (hq : _root_.IsQuasigroup f) :
@@ -4016,10 +4013,10 @@ theorem exists_isOptimal_iff_group_isotope_feasibleQuotient
     -- IsOptimal_mk says (objective Θ f).re = 3 * n²
     have hH : (_root_.objective Θ f).re = 3 * (n : ℝ) ^ 2 := hopt
     have huc : _root_.UnitaryCollinear Θ f :=
-      (theorem9_absolute_feasible_bound_rigidity f hq Θ hfeas).mp hH
+      (absolute_feasible_bound_rigidity f hq Θ hfeas).mp hH
     exact unitary_collinear_implies_group_isotope f hq ⟨Θ, huc⟩
   · intro hgi
-    obtain ⟨Θ_opt, huc⟩ := lemma14_group_isotope_admits_unitary_collinear f hq hgi
+    obtain ⟨Θ_opt, huc⟩ := group_isotope_admits_unitary_collinear f hq hgi
     refine ⟨Θ_opt, huc.feasible, ?_⟩
     -- objective.re = 3n² for UC
     show (_root_.objective Θ_opt f).re = 3 * (n : ℝ) ^ 2

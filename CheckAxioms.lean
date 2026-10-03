@@ -1,0 +1,35 @@
+import HyperCubeGroup.MatrixAMGM
+import HyperCubeGroup.Coercivity
+import HyperCubeGroup.Tikhonov
+
+open HyperCubeGroup
+
+-- Matrix AM-GM & Equality
+#print axioms matrix_amgm
+#print axioms matrix_amgm_equality
+
+#print axioms decomposition
+#print axioms objective_ge_inverseScalePenalty
+#print axioms shared_gram_matrices
+#print axioms normalized_rank_constant
+#print axioms kappa_one_iff_unitary
+#print axioms collinear_lower_bound
+#print axioms absolute_feasible_bound_lower
+#print axioms absolute_feasible_bound_rigidity
+#print axioms unitary_collinearity_iff_group_isotope
+#print axioms global_optimality_dichotomy
+#print axioms strict_gap_non_group_unconditional
+#print axioms synchronization
+#print axioms synchronized_homomorphism
+#print axioms synchronized_injective
+#print axioms representation_unique
+#print axioms group_isotope_admits_unitary_collinear
+#print axioms IsUpperTriangular.norm_trace_cubed_pow_four_le
+#print axioms matrix_schur_trace_bound_xyz
+#print axioms Tikhonov.regularized_existence
+#print axioms Coercivity.absolute_feasible_bound_lower_feasibleQuotient
+#print axioms Coercivity.case2_strict_gap_non_group_feasibleQuotient
+#print axioms Coercivity.isOptimal_iff_unitaryCollinear_feasibleQuotient
+#print axioms Coercivity.exists_isOptimal_iff_group_isotope_feasibleQuotient
+#print axioms Coercivity.global_optimality_dichotomy_feasibleQuotient
+#print axioms Coercivity.feasibleQuotient_optimal_or_strict

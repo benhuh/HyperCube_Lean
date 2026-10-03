@@ -2,7 +2,7 @@
   HyperCubeGroup.ActiveSubspace
 
   Active-subspace machinery for the discharge of `collinear_to_unitary_collinear`
-  (manuscript Theorem 5, `thm:rigidity` / Appendix C `app:collinearity_rigidity`).
+  (manuscript Theorem, `thm:rigidity` / Appendix C `app:collinearity_rigidity`).
 
   The construction:
     1. Given a collinear feasible nondegenerate `Θ` for `f`, the

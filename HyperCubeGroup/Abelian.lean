@@ -9,7 +9,7 @@
     * The diagonal representation `diagRep` derived from a character
       system, including its homomorphism, unitarity, and feasibility
       properties; this gives an explicit unitary collinear factorisation
-      for any abelian group via `lemma14_group_isotope_admits_unitary_collinear`.
+      for any abelian group via `group_isotope_admits_unitary_collinear`.
     * Frobenius-norm unitary invariance and the **full** `U(n)³` gauge
       invariance of the objective `H` (`objective_full_unitary_gauge`),
       strengthening the symmetric `objective_unitary_gauge`.

@@ -4,10 +4,10 @@
   Analysis of the Collinear Manifold {Θ | ℛ_δ(Θ) = 0} (Section 4).
 
   Main results:
-  - Lemma 2 (Shared Gram Matrices): Shared Gram matrices X, Y, Z (index-independent, trace-n PSD)
-  - Lemma 3 (Normalized Rank κ): Normalized rank κ = rank(X)/n ≤ 1, with κ=1 iff full-rank (unitary)
-  - Lemma 6 (Collinear Lower Bound): ℬ_δ(Θ) ≥ 3 Σ δ_abc |T_abc|^{4/3}
-  - Theorem 7 (Optimality within the Collinear Manifold): On the collinear manifold, the minimum of ℋ is achieved by a unitary collinear factorization with value 3|δ|
+  - Lemma (Shared Gram Matrices): Shared Gram matrices X, Y, Z (index-independent, trace-n PSD)
+  - Lemma (Normalized Rank κ): Normalized rank κ = rank(X)/n ≤ 1, with κ=1 iff full-rank (unitary)
+  - Lemma (Collinear Lower Bound): ℬ_δ(Θ) ≥ 3 Σ δ_abc |T_abc|^{4/3}
+  - Theorem (Optimality within the Collinear Manifold): On the collinear manifold, the minimum of ℋ is achieved by a unitary collinear factorization with value 3|δ|
 -/
 
 import HyperCubeGroup.Decomposition
@@ -18,7 +18,7 @@ noncomputable section
 
 variable {n : ℕ} [NeZero n]
 
-/-! ## Lemma 2: Shared Gram Matrices -/
+/-! ## Lemma: Shared Gram Matrices -/
 
 /-- The normalized Gram matrix for factor A:
     X_a = A_a A_a† / ‖A_a‖². Under collinearity, this is index-independent. -/
@@ -32,7 +32,7 @@ def gramB (Θ : HCParams n) (b : Fin n) : Matrix (Fin n) (Fin n) ℂ :=
 def gramC (Θ : HCParams n) (c : Fin n) : Matrix (Fin n) (Fin n) ℂ :=
   (1 / frobNormSq (Θ.C c)) • (Θ.C c * (Θ.C c).conjTranspose)
 
-/-- **Lemma 2 (Shared Gram Matrices).**
+/-- **Lemma (Shared Gram Matrices).**
     Assume nondegeneracy and perfect collinearity (R = 0).
     There exist index-independent, trace-n PSD Gram matrices X, Y, Z such that:
       X = A_a A_a† / ‖A_a‖² = C_c† C_c / ‖C_c‖²
@@ -43,7 +43,7 @@ def gramC (Θ : HCParams n) (c : Fin n) : Matrix (Fin n) (Fin n) ℂ :=
     A_a(B_b C_c) = (A_a B_b)C_c. The collinearity forces
     A_a A_a† / ‖A_a‖² = C_c† C_c / ‖C_c‖² for all a, c in supported triples.
     Connectivity of the quasigroup support graph propagates this globally. -/
-theorem lemma2_shared_gram_matrices (Θ : HCParams n) (f : BinOp n)
+theorem shared_gram_matrices (Θ : HCParams n) (f : BinOp n)
     (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
     (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f) :
     ∃ X : Matrix (Fin n) (Fin n) ℂ,
@@ -109,7 +109,7 @@ theorem lemma2_shared_gram_matrices (Θ : HCParams n) (f : BinOp n)
     simp only [gramA] at key ⊢
     exact key.symm
 
-/-! ## Lemma 3: Normalized Rank -/
+/-! ## Lemma: Normalized Rank -/
 
 /-- The dimensionless ratio κ_abc = ‖A_a‖² ‖B_b‖² ‖C_c‖² / |T_abc|²
     is constant across the support under collinearity. -/
@@ -117,20 +117,20 @@ def kappaTriple (Θ : HCParams n) (a b c : Fin n) : ℂ :=
   frobNormSq (Θ.A a) * frobNormSq (Θ.B b) * frobNormSq (Θ.C c) /
     (hcProduct Θ a b c * starRingEnd ℂ (hcProduct Θ a b c))
 
-/-- **Lemma 3 (Normalized Rank κ).**
+/-- **Lemma (Normalized Rank κ).**
     Assume nondegeneracy and perfect collinearity.
     The ratio κ_abc is constant across the support; call it κ.
     The shared Gram matrices satisfy X = κ X², making P := κX an
     orthogonal projection. Hence κ = rank(X)/n ≤ 1,
     with equality (κ = 1) iff X = Y = Z = I_n (full-rank, Gram = identity). -/
-theorem lemma3_normalized_rank_constant (Θ : HCParams n) (f : BinOp n)
+theorem normalized_rank_constant (Θ : HCParams n) (f : BinOp n)
     (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
     (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f) :
     ∃ κ : ℂ,
       (∀ a b : Fin n, kappaTriple Θ a b (f.op a b) = κ) ∧
       -- κ ≤ 1 (as real)
       κ.re ≤ 1 ∧ κ.re > 0 := by
-  obtain ⟨X, hgA, hgC⟩ := lemma2_shared_gram_matrices Θ f hq hnd hcol hfeas
+  obtain ⟨X, hgA, hgC⟩ := shared_gram_matrices Θ f hq hnd hcol hfeas
   have hids := (perfectCollinearity_iff_identities Θ f hnd).mp hcol
   have hT : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) = 1 := by
     intro a b; have := hfeas a b (f.op a b); rwa [structureTensor, if_pos rfl] at this
@@ -351,13 +351,13 @@ theorem lemma3_normalized_rank_constant (Θ : HCParams n) (f : BinOp n)
   exact ⟨κ, hκ_triple, hκ_le, hκ_pos⟩
 
 /-- κ = 1 iff Gram matrices are identity (full-rank / unitary factorization). -/
-theorem lemma3_kappa_one_iff_unitary (Θ : HCParams n) (f : BinOp n)
+theorem kappa_one_iff_unitary (Θ : HCParams n) (f : BinOp n)
     (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
     (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f)
     (hκ : ∀ a b : Fin n, kappaTriple Θ a b (f.op a b) = 1) :
     ∀ a : Fin n, gramA Θ a = 1 := by
   -- Setup
-  obtain ⟨X, hgA, hgC⟩ := lemma2_shared_gram_matrices Θ f hq hnd hcol hfeas
+  obtain ⟨X, hgA, hgC⟩ := shared_gram_matrices Θ f hq hnd hcol hfeas
   have hids := (perfectCollinearity_iff_identities Θ f hnd).mp hcol
   have hT : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) = 1 := by
     intro a b; have := hfeas a b (f.op a b); rwa [structureTensor, if_pos rfl] at this
@@ -455,7 +455,7 @@ theorem lemma3_kappa_one_iff_unitary (Θ : HCParams n) (f : BinOp n)
   have h1eqX := (frobNormSq_eq_zero_iff (1 - X)).mp hfrob
   rw [sub_eq_zero] at h1eqX; exact h1eqX.symm
 
-/-! ## Lemma 6: AM-GM Lower Bound -/
+/-! ## Lemma: AM-GM Lower Bound -/
 
 /-- Scalar AM-GM cubed: (α+β+γ)³ ≥ 27αβγ for nonneg reals. -/
 private theorem amgm_cubed (α β γ : ℝ) (hα : 0 ≤ α) (hβ : 0 ≤ β) (hγ : 0 ≤ γ) :
@@ -481,16 +481,16 @@ private theorem sum_inv_ge_three (a b c : ℝ) (ha : a > 0) (hb : b > 0) (hc : c
   -- s ≥ 0 and s³ ≥ 27 → s ≥ 3
   nlinarith [sq_nonneg (s - 3), sq_nonneg s]
 
-/-- **Lemma 6 (Collinear Lower Bound).**
+/-- **Lemma (Collinear Lower Bound).**
     Assume nondegeneracy and perfect collinearity.
     ℬ_δ(Θ) ≥ 3n² (for feasible Θ where |T|=1 on support). -/
-theorem lemma6_collinear_lower_bound (Θ : HCParams n) (f : BinOp n)
+theorem collinear_lower_bound (Θ : HCParams n) (f : BinOp n)
     (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
     (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f) :
     (inverseScalePenalty Θ f).re ≥
       3 * (n : ℝ) ^ 2 := by
   -- Get κ constant
-  obtain ⟨κ, hκ_const, hκ_le, hκ_pos⟩ := lemma3_normalized_rank_constant Θ f hq hnd hcol hfeas
+  obtain ⟨κ, hκ_const, hκ_le, hκ_pos⟩ := normalized_rank_constant Θ f hq hnd hcol hfeas
   -- T = 1 on support
   have hT : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) = 1 := by
     intro a b; have := hfeas a b (f.op a b); rwa [structureTensor, if_pos rfl] at this
@@ -575,7 +575,7 @@ theorem lemma6_collinear_lower_bound (Θ : HCParams n) (f : BinOp n)
     _ = 3 * (n : ℝ) ^ 2 := by
         simp [Finset.sum_const, Fintype.card_fin, sq]; ring
 
-/-! ## Theorem 7: Optimality within the Collinear Manifold -/
+/-! ## Theorem: Optimality within the Collinear Manifold -/
 
 /-- A collinear factorization is **unitary** if all factor slices are unitary
     (in the normalized sense: ‖A_a‖² = 1, A_a A_a† = I). -/
