@@ -20,10 +20,10 @@ For each named theorem below, `#print axioms <name>` uses only standard Lean bac
 | Theorem 6: Dynamic Unconstrained Bound | `dynamic_unconstrained_bound`, `dynamicFloor_eq_of_factorizes` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Prediction-dependent floor for arbitrary parameters on any binary operation; no feasibility, nondegeneracy, or collinearity hypothesis |
 | Theorem 7: Absolute Feasible Bound | `absolute_feasible_bound_lower`, `absolute_feasible_bound_rigidity` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Feasible lower bound and equality iff unitary collinearity |
 | Theorem 8: UC ⟺ Group Isotope | `unitary_collinearity_iff_group_isotope` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Full unitary existence equivalence |
-| Theorem 9: Global Optimality and Associativity Gap | `global_optimality_dichotomy`, `strict_gap_non_group`, `strict_gap_non_group_unconditional` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Group-isotope floor attainment; pointwise strict bound for every feasible non-group factorization |
+| Theorem 9: Global Optimality and Associativity Gap | `global_optimality_dichotomy`, `group_isotope_global_minimizer_classification`, `strict_gap_non_group`, `strict_gap_non_group_unconditional` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean), [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean) | Full group-isotope global minimizer classification up to isotopy and three unitary gauges of the left-regular representation; non-group targets have only a pointwise strict bound for every feasible factorization |
 | Lemma 10: Synchronization | `synchronization` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Unitary synchronizing gauge for loops |
 | Lemma 11: Homomorphism and Injectivity | `synchronized_homomorphism`, `synchronized_injective` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Homomorphism and injectivity of the synchronized map |
-| Lemma 12: Uniqueness of Representation | `representation_unique` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Regular-character trace identity only; **not full unitary equivalence** |
+| Lemma 12: Uniqueness of Representation | `representation_unique`, `representation_unitary_equivalence` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean), [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean) | Regular-character trace identity and full unitary equivalence to the left-regular representation for a synchronized feasible associative loop |
 | Lemma 13: Group-Isotope Sufficiency | `group_isotope_admits_unitary_collinear` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Explicit left-regular construction of a unitary collinear factorization |
 | Lemma 14: Spectral Trace-Frobenius Bound | `IsUpperTriangular.norm_trace_cubed_pow_four_le`, `matrix_schur_trace_bound_xyz` | [Spectral.lean](HyperCubeGroup/Foundation/Spectral.lean), [BlockCyclic.lean](HyperCubeGroup/Foundation/BlockCyclic.lean) | Upper-triangular bound, Schur reduction, and block-cyclic specialization |
 | Theorem 15: General Collinearity ⟺ Group Isotope | `collinear_iff_group_isotope`, `collinear_to_unitary_collinear` | [GeneralCollinearity.lean](HyperCubeGroup/Foundation/GeneralCollinearity.lean) | Full feasible collinear existence equivalence, including rank-deficient and imbalanced factors; existence of a new unitary factorization |
@@ -75,6 +75,11 @@ The norms are normalized Frobenius norms. For a quasigroup table, `|δ| = n²`. 
 | `InverseRank.lean` | 210 | Full collinear inverse-rank bound, global norm balancing, and dynamic-floor equality at κ = 1 |
 | `GroupIsotope.lean` | 1235 | Dynamic unconstrained bound, isotopy transfer, unitary equivalence, and feasible landscape bounds |
 | `GeneralCollinearity.lean` | 195 | General collinearity equivalence via associative sandwich products and feasibility |
+| [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean) | 285 | Feasible loop synchronization, full unitary equivalence, and group-isotope global minimizer classification up to isotopy and three unitary gauges |
+| [Representation/Characters.lean](HyperCubeGroup/Foundation/Representation/Characters.lean) | 130 | Character equality implies unitary equivalence; generic machinery in `HyperCubeGroup.Manuscript` |
+| [Representation/UnitaryIntertwiner.lean](HyperCubeGroup/Foundation/Representation/UnitaryIntertwiner.lean) | 90 | Unitarization of invertible intertwiners in `HyperCubeGroup.Manuscript` |
+| [Representation/UnitaryMatrix.lean](HyperCubeGroup/Foundation/Representation/UnitaryMatrix.lean) | 8 | Shared unitary matrix type in `HyperCubeGroup.ThreeFamilySynchronization` |
+| [External/CharacterRigidity.lean](HyperCubeGroup/Foundation/External/CharacterRigidity.lean) | 250 | Licensed character-rigidity proof; Apache 2.0 license retained in [External/LICENSE](HyperCubeGroup/Foundation/External/LICENSE) |
 | `Abelian.lean` | 312 | Diagonal rep, full U(n)³ gauge invariance, cyclic group instance |
 | `MatrixAMGM.lean` | 341 | Arbitrary-amplitude Matrix AM-GM and unit-trace equality rigidity |
 | `BlockCyclic.lean` | 519 | Block-cyclic 3n×3n matrix construction; structural equivalences |
@@ -87,9 +92,9 @@ The norms are normalized Frobenius norms. For a quasigroup table, `|δ| = n²`. 
 | `Tikhonov.lean` | 639 | HCParams normed/finite-dim structure; Weierstrass + regularized existence theorems |
 | `Coercivity.lean` | 4053 | Full gauge group structure, invariances, gauge orbit + setoid + quotient + lifted predicates |
 
-All files in this table live in `HyperCubeGroup/Foundation`.
+All files in this table live recursively under `HyperCubeGroup/Foundation`.
 
-**Core totals:** 13,887 lines of Lean 4, **0 project axioms**, **0 proof `sorry`s**.
+**Core totals:** 14,650 lines of Lean 4 across 23 files, **0 project axioms**, **0 proof `sorry`s**.
 
 ## Core Formalized Results
 
@@ -97,7 +102,7 @@ All files in this table live in `HyperCubeGroup/Foundation`.
 
 **Global Optimality and Associativity Gap (Section 5).** `matrix_amgm_general` establishes Lemma 5's arbitrary-amplitude inequality; `matrix_amgm_equality` proves rigidity at unit normalized trace. `dynamic_unconstrained_bound` proves Theorem 6. `absolute_feasible_bound_lower` and `absolute_feasible_bound_rigidity` prove Theorem 7's feasible floor and equality geometry. `unitary_collinearity_iff_group_isotope` proves Theorem 8. `global_optimality_dichotomy` combines constructive floor attainment for group isotopes with **the pointwise strict bound for non-group targets**. **Both `strict_gap_non_group` and `strict_gap_non_group_unconditional` remain available.**
 
-**Deferred Proofs (Appendices B and C).** `synchronization`, `synchronized_homomorphism`, and `synchronized_injective` implement the unitary necessity argument. `group_isotope_admits_unitary_collinear` supplies sufficiency via `leftRegularRep`. `representation_unique` establishes the regular-character trace identity. The spectral and block-cyclic modules provide the Matrix AM-GM proof infrastructure.
+**Deferred Proofs (Appendices B and C).** `synchronization`, `synchronized_homomorphism`, and `synchronized_injective` implement the unitary necessity argument. The stronger `loop_unitary_synchronization` in [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean) preserves feasibility and reconstructs all three original slice families using unitary gauges. `group_isotope_admits_unitary_collinear` supplies sufficiency via `leftRegularRep`. `representation_unique` establishes the regular-character trace identity, and `representation_unitary_equivalence` upgrades it to full unitary equivalence for synchronized feasible associative loops. `group_isotope_global_minimizer_classification` classifies every group-isotope global minimizer up to isotopy and three unitary gauges of the left-regular representation. **Generic character and intertwiner machinery retains the `HyperCubeGroup.Manuscript` namespace.** The spectral and block-cyclic modules provide the Matrix AM-GM proof infrastructure.
 
 ## Additional Repository Results
 
@@ -128,7 +133,6 @@ The following manuscript components remain outside the scope of formalization:
 
 - **Hessian eigenvalue analysis (Appendix F.2):** the manuscript's Hessian eigenvalue analysis is not formalized here.
 <!-- - **Positive infimum gap:** the Lean non-group theorem proves `ℋ(Θ) > 3n²` for each feasible `Θ`. This alone does not prove the manuscript's stronger `inf ℋ > 3n²`, which would require a uniform gap or an appropriate attainment argument. [Do we need to keep this comment? is this crucial to have?] -->
-- **Representation uniqueness:** `representation_unique` proves the character identity used in Lemma 12, *not the character-theoretic unitary equivalence to the left-regular representation or the full minimizer classification asserted in Theorem 9*.
 - **Empirical results and training dynamics:** the experiments in Section 6 and Appendix D, numerical trade-offs, and optimizer convergence are not formalized by these algebraic results.
 
 ## Mathlib Upstream Candidates
@@ -143,6 +147,8 @@ The codebase contains several pieces of independent interest to the broader Lean
 ## Building
 
 Requires [Lean 4](https://leanprover.github.io/) `v4.29.0-rc6` and the [Mathlib](https://github.com/leanprover-community/mathlib4) revision pinned in [lake-manifest.json](lake-manifest.json).
+
+For a standalone Foundation package, copy the entire `HyperCubeGroup/Foundation` subtree, including [External/CharacterRigidity.lean](HyperCubeGroup/Foundation/External/CharacterRigidity.lean) and [External/LICENSE](HyperCubeGroup/Foundation/External/LICENSE), retaining the source attribution and Apache 2.0 license. Generic machinery retains the `HyperCubeGroup.Manuscript` namespace. Imports use only the canonical Foundation paths.
 
 Run from the repository root:
 
