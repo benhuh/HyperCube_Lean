@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.Plancherel
+  HyperCubeGroup.Foundation.Plancherel
 
   Structural Plancherel / Parseval infrastructure for the HyperCube model.
   Everything in this file is unconditionally proved.
@@ -25,7 +25,7 @@
          `Σ_a A_a A_a† = (1/n) Σ_χ Â_χ Â_χ†`.
 -/
 
-import HyperCubeGroup.Decomposition
+import HyperCubeGroup.Foundation.Decomposition
 
 open Matrix BigOperators Finset Complex
 

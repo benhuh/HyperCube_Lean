@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.Tikhonov
+  HyperCubeGroup.Foundation.Tikhonov
 
   Existence of global minimisers via Tikhonov regularisation
   This is additional repository infrastructure, not an active numbered
@@ -39,8 +39,8 @@
   (Tier 3B / Manuscript Appendix F).
 -/
 
-import HyperCubeGroup.Basic
-import HyperCubeGroup.Decomposition
+import HyperCubeGroup.Foundation.Basic
+import HyperCubeGroup.Foundation.Decomposition
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.Algebra.Module.FiniteDimension

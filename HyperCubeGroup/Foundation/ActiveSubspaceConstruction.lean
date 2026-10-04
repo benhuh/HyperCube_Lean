@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.ActiveSubspaceConstruction
+  HyperCubeGroup.Foundation.ActiveSubspaceConstruction
 
   Construction of the unitary candidate `Θ'` from a feasible nondegenerate
   parameter `Θ`. Uses the generic active-subspace machinery
@@ -15,8 +15,8 @@
     * `activeSubspaceConstruction`: the constructed Θ' and its unitarity.
 -/
 
-import HyperCubeGroup.ActiveSubspaceGeneric
-import HyperCubeGroup.GroupIsotope
+import HyperCubeGroup.Foundation.ActiveSubspaceGeneric
+import HyperCubeGroup.Foundation.GroupIsotope
 
 open Matrix BigOperators Complex
 open scoped ComplexOrder

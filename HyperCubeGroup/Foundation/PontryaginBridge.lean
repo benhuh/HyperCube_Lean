@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.PontryaginBridge
+  HyperCubeGroup.Foundation.PontryaginBridge
 
   Bridge from `IsAbelianGroup f` (a `BinOp n` carrying associative,
   commutative, identity-and-cancellation structure) to Mathlib's
@@ -25,7 +25,7 @@
     `AddChar.sum_apply_eq_ite` (completeness via doubleDualEmb).
   -/
 
-import HyperCubeGroup.Abelian
+import HyperCubeGroup.Foundation.Abelian
 import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality

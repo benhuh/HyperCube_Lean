@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.Decomposition
+  HyperCubeGroup.Foundation.Decomposition
 
   The orthogonal decomposition ℋ = ℬ + ℛ (Section 3).
 
@@ -11,7 +11,7 @@
     and ℛ_δ(Θ) = 0 iff perfect collinearity holds.
 -/
 
-import HyperCubeGroup.Basic
+import HyperCubeGroup.Foundation.Basic
 open Matrix BigOperators Finset
 
 noncomputable section
@@ -836,6 +836,25 @@ theorem perfectCollinearity_iff_identities (Θ : HCParams n) (f : BinOp n)
     have hB := collinearB_implies_residualB_zero Θ hnd a b (f.op a b) (hidB a b)
     have hC := collinearC_implies_residualC_zero Θ hnd a b (f.op a b) (hidC a b)
     simp only [hA, hB, hC, frobNormSq_zero, add_zero]
+
+theorem nonzero_supported_predictions_implies_nondegenerate
+    (Θ : HCParams n) (f : BinOp n) (hq : IsQuasigroup f)
+    (htrace : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) ≠ 0) :
+    Nondegenerate Θ where
+  A_pos := fun a hzero => by
+    have hA := (frobNormSq_eq_zero_iff _).mp hzero
+    let b : Fin n := ⟨0, NeZero.pos n⟩
+    exact htrace a b (by simp [hcProduct, hA])
+  B_pos := fun b hzero => by
+    have hB := (frobNormSq_eq_zero_iff _).mp hzero
+    let a : Fin n := ⟨0, NeZero.pos n⟩
+    exact htrace a b (by simp [hcProduct, hB])
+  C_pos := fun c hzero => by
+    have hC := (frobNormSq_eq_zero_iff _).mp hzero
+    let a : Fin n := ⟨0, NeZero.pos n⟩
+    obtain ⟨b, hop⟩ := (hq.left_cancel a).surjective c
+    apply htrace a b
+    simp [hcProduct, hop, hC]
 
 /-- Feasibility implies nondegeneracy: if T = δ on support, no factor slice can be zero. -/
 theorem factorizes_implies_nondegenerate (Θ : HCParams n) (f : BinOp n)

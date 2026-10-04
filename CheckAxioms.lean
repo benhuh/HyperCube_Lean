@@ -1,12 +1,17 @@
-import HyperCubeGroup.MatrixAMGM
-import HyperCubeGroup.Coercivity
-import HyperCubeGroup.Tikhonov
+import HyperCubeGroup.Foundation.MatrixAMGM
+import HyperCubeGroup.Foundation.InverseRank
+import HyperCubeGroup.Foundation.GeneralCollinearity
+import HyperCubeGroup.Foundation.Coercivity
+import HyperCubeGroup.Foundation.Tikhonov
 
 open HyperCubeGroup
 
 -- Matrix AM-GM & Equality
 #print axioms matrix_amgm
 #print axioms matrix_amgm_equality
+#print axioms matrix_amgm_general
+#print axioms dynamic_unconstrained_bound
+#print axioms dynamicFloor_eq_of_factorizes
 
 #print axioms decomposition
 #print axioms objective_ge_inverseScalePenalty
@@ -14,11 +19,22 @@ open HyperCubeGroup
 #print axioms normalized_rank_constant
 #print axioms kappa_one_iff_unitary
 #print axioms collinear_lower_bound
+#print axioms shared_gram_matrices_of_nonzero
+#print axioms normalized_rank_constant_of_nonzero
+#print axioms collinear_inverse_rank_bound
+#print axioms collinear_inverse_rank_bound_of_constant
+#print axioms collinear_dynamic_floor_eq_iff
 #print axioms absolute_feasible_bound_lower
 #print axioms absolute_feasible_bound_rigidity
 #print axioms unitary_collinearity_iff_group_isotope
 #print axioms global_optimality_dichotomy
 #print axioms strict_gap_non_group_unconditional
+#print axioms strict_gap_non_group
+#print axioms loop_collinear_associative
+#print axioms general_collinear_implies_group_isotope
+#print axioms collinear_iff_group_isotope
+#print axioms collinear_implies_group_isotope
+#print axioms collinear_to_unitary_collinear
 #print axioms synchronization
 #print axioms synchronized_homomorphism
 #print axioms synchronized_injective

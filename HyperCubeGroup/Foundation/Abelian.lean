@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.Abelian
+  HyperCubeGroup.Foundation.Abelian
 
   Abelian-group structure for the HyperCube model.
 
@@ -22,9 +22,9 @@
         proved in `GroupIsotope.lean` via the Matrix AM-GM inequality.
 -/
 
-import HyperCubeGroup.GroupIsotope
-import HyperCubeGroup.Plancherel
-import HyperCubeGroup.MatrixAMGM
+import HyperCubeGroup.Foundation.GroupIsotope
+import HyperCubeGroup.Foundation.Plancherel
+import HyperCubeGroup.Foundation.MatrixAMGM
 
 open Matrix BigOperators Finset Complex
 

@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.Basic
+  HyperCubeGroup.Foundation.Basic
 
   Core definitions for the HyperCube tensor factorization model.
 

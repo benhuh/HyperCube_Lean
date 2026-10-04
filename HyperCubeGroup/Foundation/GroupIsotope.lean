@@ -1,18 +1,18 @@
 /-
-  HyperCubeGroup.GroupIsotope
+  HyperCubeGroup.Foundation.GroupIsotope
 
   The bidirectional characterization:
-  Collinear Factorization ↔ Group Isotope.
+  Unitary Collinear Factorization ↔ Group Isotope.
 
   Main results:
   - Lemma (Synchronization): unitary collinear → synchronized gauge A'=B'=(C')†
   - Lemma (Homomorphism and Injectivity): synchronized map ρ: Q → U(n)
   - Theorem (Unitary Collinearity ⟺ Group Isotope)
-  - Theorem (General Collinearity ⟺ Group Isotope)
   - Lemma (Uniqueness of Representation)
   - Lemma (Sufficiency: Group Isotope ⟹ Unitary Collinear Factorization)
 
   Also, derived from `MatrixAMGM`:
+  - `dynamic_unconstrained_bound`: the prediction-dependent floor for arbitrary parameters.
   - `universal_lower_bound_general`: ℋ(Θ) ≥ 3|δ| for any feasible Θ on any binary op.
   - `equality_rigidity_general`: equality ℋ(Θ) = 3|δ| forces unitary slices
     with `A_a B_b C_c = I_n` at every supported triple.
@@ -22,11 +22,8 @@
 
   ## Descriptively named axiom-free landscape theorems
 
-  All of these have `#print axioms ⟹ [propext, Classical.choice, Quot.sound]`,
-  i.e., they do NOT depend on the open `collinear_to_unitary_collinear`
-  axiom.
-  The single open axiom only affects Theorem (the rank-deficient
-  general collinearity ⟺ group isotope) — not the headline results below.
+  These results use only standard Lean background axioms.
+  The general collinearity equivalence is proved in `GeneralCollinearity.lean`.
 
   - `unitary_collinearity_iff_group_isotope` (Theorem: Unitary Collinearity ⟺ Group Isotope)
   - `absolute_feasible_bound_lower`          (Theorem lower-bound half: H ≥ 3|δ| for feasible Θ)
@@ -49,8 +46,8 @@
   - `feasibleQuotient_optimal_or_strict`
 -/
 
-import HyperCubeGroup.CollinearManifold
-import HyperCubeGroup.MatrixAMGM
+import HyperCubeGroup.Foundation.CollinearManifold
+import HyperCubeGroup.Foundation.MatrixAMGM
 
 open Matrix BigOperators Finset Complex
 
@@ -494,21 +491,7 @@ theorem unitary_collinear_implies_group_isotope (f : BinOp n)
     -- h : χ(f.op a b) = g.op(φ a)(ψ b), need f.op a b = χ⁻¹(g.op ...)
     exact χ.injective (by simp [Equiv.apply_symm_apply]; exact h.symm)⟩
 
-/-! ## Collinear-to-Unitary discharge (Tier 2B in flight)
-
-The full discharge of `collinear_to_unitary_collinear` requires the
-active-subspace construction from manuscript Appendix E:
-  1. Restrict each `A_a, B_b, C_c` to the column space of the shared
-     Gram matrix `X` (the active subspace, dim = κn).
-  2. On the active subspace, `A_a / √α_a` is unitary (since
-     `A_a A_aᴴ = α_a • X` and `X = I_n` on the active subspace).
-  3. Extend the partial isometry on the active subspace to a full
-     unitary on `ℂⁿ` via Gram-Schmidt, picking arbitrary unitary on
-     the orthogonal complement.
-This requires roughly 500-1000 lines of new Lean (orthogonal projection,
-active subspace lemmas, partial isometry extension).
-The unitarity-preserving rescaling helper is below as a building block.
--/
+/-! ## Norm rescaling -/
 
 /-- Rescale a parameter triple so each slice has unit Frobenius norm
     squared.
@@ -517,28 +500,6 @@ noncomputable def rescaleByNorm (Θ : HCParams n) : HCParams n where
   A a := ((Real.sqrt (frobNormSq (Θ.A a)).re)⁻¹ : ℂ) • Θ.A a
   B b := ((Real.sqrt (frobNormSq (Θ.B b)).re)⁻¹ : ℂ) • Θ.B b
   C c := ((Real.sqrt (frobNormSq (Θ.C c)).re)⁻¹ : ℂ) • Θ.C c
-
-/-- Collinear + feasible + nondegenerate → ∃ unitary collinear factorization.
-Full proof requires: shared Gram matrices (Lemma), normalized rank κ = 1
-    (Lemma), and norm rescaling to achieve unitarity (Section 4.1).
-Status: the κ = 1 case can be discharged via `rescaleByNorm` and the
-    existing `kappa_one_iff_unitary`.
-The general case (κ < 1) requires
-    the active-subspace machinery; remains axiomatised.
--/
-private axiom collinear_to_unitary_collinear (f : BinOp n) (hq : IsQuasigroup f)
-    (Θ : HCParams n) (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f)
-    (hnd : Nondegenerate Θ) :
-    ∃ Θ' : HCParams n, UnitaryCollinear Θ' f
-
-theorem collinear_implies_group_isotope (f : BinOp n)
-    (hq : IsQuasigroup f)
-    (hexists : ∃ Θ : HCParams n, PerfectCollinearity Θ f ∧ Factorizes Θ f ∧
-      Nondegenerate Θ) :
-    IsGroupIsotope f := by
-  obtain ⟨Θ, hcol, hfeas, hnd⟩ := hexists
-  obtain ⟨Θ', huc⟩ := collinear_to_unitary_collinear f hq Θ hcol hfeas hnd
-  exact unitary_collinear_implies_group_isotope f hq ⟨Θ', huc⟩
 
 /-!
 ## Lemma: Sufficiency: Group Isotope ⟹ Unitary Collinear Factorization -/
@@ -808,26 +769,6 @@ theorem group_isotope_admits_unitary_collinear (f : BinOp n)
       rw [hT, hN]; simp
   exact ⟨hcol, hfact, hunitA, hunitB, hunitC⟩
 
-/-! ## Bidirectional equivalence -/
-
-private theorem frobNormSq_unitary_ne_zero
-    (M : Matrix (Fin n) (Fin n) ℂ) (h : M * M.conjTranspose = 1) :
-    frobNormSq M ≠ 0 := by
-  rw [frobNormSq_unitary_eq_one M h]; exact one_ne_zero
-
-theorem collinear_iff_group_isotope (f : BinOp n) (hq : IsQuasigroup f) :
-    (∃ Θ : HCParams n, PerfectCollinearity Θ f ∧ Factorizes Θ f ∧
-      Nondegenerate Θ) ↔
-    IsGroupIsotope f := by
-  constructor
-  · exact collinear_implies_group_isotope f hq
-  · intro hgi
-    obtain ⟨Θ, huc⟩ := group_isotope_admits_unitary_collinear f hq hgi
-    exact ⟨Θ, huc.collinear, huc.feasible,
-           ⟨fun a => frobNormSq_unitary_ne_zero _ (huc.unitaryA a),
-            fun b => frobNormSq_unitary_ne_zero _ (huc.unitaryB b),
-            fun c => frobNormSq_unitary_ne_zero _ (huc.unitaryC c)⟩⟩
-
 /-!
 ## Lemma: Uniqueness of Representation -/
 
@@ -878,6 +819,38 @@ def IsGlobalMinimizer (Θ : HCParams n) (f : BinOp n) : Prop :=
 The general universal lower bound theorems are derived from the Matrix AM-GM
 lemma in `MatrixAMGM`.
 -/
+
+/-- The prediction-dependent floor, summed over the target support. -/
+def dynamicFloor (Θ : HCParams n) (f : BinOp n) : ℝ :=
+  3 * ∑ a : Fin n, ∑ b : Fin n,
+    ‖hcProduct Θ a b (f.op a b)‖ ^ (4 / 3 : ℝ)
+
+/-- Theorem 6: the dynamic bound holds for arbitrary parameters, including
+    vanishing supported predictions, without feasibility or collinearity. -/
+theorem dynamic_unconstrained_bound (f : BinOp n) (Θ : HCParams n) :
+    dynamicFloor Θ f ≤ (objective Θ f).re := by
+  rw [dynamicFloor, objective_eq_sum_support, Complex.re_sum]
+  simp only [Finset.mul_sum, Complex.re_sum, Complex.add_re]
+  apply Finset.sum_le_sum
+  intro a _
+  apply Finset.sum_le_sum
+  intro b _
+  have hbound := matrix_amgm_general (Θ.A a) (Θ.B b) (Θ.C (f.op a b))
+  change 3 * ‖hcProduct Θ a b (f.op a b)‖ ^ (4 / 3 : ℝ) ≤ _ at hbound
+  linarith
+
+omit [NeZero n] in
+/-- Exact factorization reduces the dynamic floor to the absolute feasible floor. -/
+theorem dynamicFloor_eq_of_factorizes (f : BinOp n) (Θ : HCParams n)
+    (hfeas : Factorizes Θ f) :
+    dynamicFloor Θ f = 3 * (n : ℝ) ^ 2 := by
+  unfold dynamicFloor
+  have hsupport : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) = 1 := by
+    intro a b
+    rw [hfeas]
+    simp [structureTensor]
+  simp_rw [hsupport, norm_one, Real.one_rpow]
+  simp [Finset.sum_const, Fintype.card_fin, sq]
 
 /-- Per-pair feasibility on a supported triple in unnormalised form:
     `Tr(A_a B_b C_{f.op a b}) / n = 1`.
@@ -1133,38 +1106,16 @@ theorem equality_rigidity_implies_perfect_collinearity
           (Θ.C (f.op a b)).conjTranspose
     rw [hT, hnC]; simp [hAB]
 
-/-- **Theorem Case 2 (Strict Gap for Non-Group Quasigroups, UNCONDITIONAL).**
-    For any quasigroup `f` that is not a group isotope, every feasible Θ
-    satisfies `ℋ(Θ) > 3|δ|` strictly.
-    Derived from the matrix AM–GM
-    equality rigidity in `equality_rigidity_general`: if `ℋ(Θ) = 3|δ|`, then
-    every supported triple is unitary collinear, which forces `f` to be
-    a group isotope. -/
-theorem strict_gap_non_group (f : BinOp n) (hq : IsQuasigroup f)
-    (hnotgi : ¬ IsGroupIsotope f) :
-    ∀ Θ : HCParams n, Factorizes Θ f →
-      (objective Θ f).re > 3 * (n : ℝ) ^ 2 := by
-  intro Θ hfeas
-  have hge := universal_lower_bound_general f Θ hfeas
-  by_contra hle
-  push_neg at hle
-  have h_eq : (objective Θ f).re = 3 * (n : ℝ) ^ 2 := le_antisymm hle hge
-  have hnd := factorizes_implies_nondegenerate Θ f hq hfeas
-  have hcol := equality_rigidity_implies_perfect_collinearity f Θ hfeas hnd h_eq
-  exact hnotgi (collinear_implies_group_isotope f hq ⟨Θ, hcol, hfeas, hnd⟩)
-
 /-- **Theorem Case 2 (UNCONDITIONAL strict gap, axiom-free version).**
     For any quasigroup `f` that is not a group isotope, every feasible Θ
     satisfies `ℋ(Θ) > 3|δ|` strictly.
-    This proof bypasses the
-    `collinear_to_unitary_collinear` axiom: from `H = 3|δ|` we directly
+    From `H = 3|δ|` we directly
     extract a `UnitaryCollinear` factorisation via `equality_rigidity_general`
     (slot-unitary) plus `equality_rigidity_implies_perfect_collinearity`
     (R = 0), then apply the axiom-free `unitary_collinear_implies_group_isotope`
     (Theorem unitary case).
-    This makes precise that the global landscape dichotomy
-    does NOT depend on the open general collinearity theorem (rank-deficient
-    case).
+    The global landscape dichotomy does not require the general
+    collinearity equivalence.
 -/
 theorem strict_gap_non_group_unconditional (f : BinOp n) (hq : IsQuasigroup f)
     (hnotgi : ¬ IsGroupIsotope f) :
@@ -1199,12 +1150,17 @@ theorem strict_gap_non_group_unconditional (f : BinOp n) (hq : IsQuasigroup f)
   -- Apply axiom-free Theorem (unitary case).
   exact hnotgi (unitary_collinear_implies_group_isotope f hq ⟨Θ, huc⟩)
 
+theorem strict_gap_non_group (f : BinOp n) (hq : IsQuasigroup f)
+    (hnotgi : ¬ IsGroupIsotope f) :
+    ∀ Θ : HCParams n, Factorizes Θ f →
+      (objective Θ f).re > 3 * (n : ℝ) ^ 2 :=
+  strict_gap_non_group_unconditional f hq hnotgi
+
 /-- **Theorem (Unitary Collinearity ⟺ Group Isotope, axiom-free).** For any
     finite quasigroup `f`, a unitary collinear factorisation exists if and only if
     `f` is isotopic to a group.
-    This is the manuscript's Theorem packaged in
-    iff form, distinct from the more general Theorem (which currently relies on
-    the open `collinear_to_unitary_collinear` axiom for the κ<1 case).
+    The general collinearity equivalence is proved separately in
+    `GeneralCollinearity.lean`.
 -/
 theorem unitary_collinearity_iff_group_isotope (f : BinOp n)
     (hq : IsQuasigroup f) :
@@ -1259,9 +1215,7 @@ theorem absolute_feasible_bound_rigidity (f : BinOp n) (hq : IsQuasigroup f)
     This packages floor attainment and the pointwise strict bound
     into a single statement.
     The proof uses only the axiom-free
-    machinery (matrix AM-GM rigidity + Theorem unitary case);
-    it does NOT
-    depend on the open `collinear_to_unitary_collinear` axiom.
+    machinery (matrix AM-GM rigidity + Theorem unitary case).
 -/
 theorem global_optimality_dichotomy (f : BinOp n) (hq : IsQuasigroup f) :
     (IsGroupIsotope f →
@@ -1277,32 +1231,5 @@ theorem global_optimality_dichotomy (f : BinOp n) (hq : IsQuasigroup f) :
     exact ⟨Θ_opt, huc, uc_objective_value Θ_opt f huc⟩
   · -- Case 2: non-group isotope ⟹ strict gap.
     exact strict_gap_non_group_unconditional f hq
-
-/-- **Theorem (Optimality within the Collinear Manifold).**
-    Restricted to the feasible collinear manifold, the minimum of H is achieved
-    by a unitary collinear factorization with value 3|δ|.
--/
-theorem optimality_within_collinear_manifold (f : BinOp n)
-    (hq : IsQuasigroup f)
-    (hexists : ∃ Θ : HCParams n, PerfectCollinearity Θ f ∧ Factorizes Θ f) :
-    ∃ Θ_opt : HCParams n,
-      UnitaryCollinear Θ_opt f ∧
-      (objective Θ_opt f).re = 3 * (n : ℝ) ^ 2 ∧
-      ∀ Θ : HCParams n, PerfectCollinearity Θ f → Factorizes Θ f →
-        (objective Θ f).re ≥ 3 * (n : ℝ) ^ 2 := by
-  -- Part 1: Existence of optimal UC factorization
-  obtain ⟨Θ₀, hcol₀, hfeas₀⟩ := hexists
-  have hnd₀ := factorizes_implies_nondegenerate Θ₀ f hq hfeas₀
-  have hgi := collinear_implies_group_isotope f hq ⟨Θ₀, hcol₀, hfeas₀, hnd₀⟩
-  obtain ⟨Θ_opt, huc⟩ := group_isotope_admits_unitary_collinear f hq hgi
-  refine ⟨Θ_opt, huc, uc_objective_value Θ_opt f huc, ?_⟩
-  -- Part 2: Universal lower bound on collinear manifold
-  intro Θ hcol hfeas
-  have hnd := factorizes_implies_nondegenerate Θ f hq hfeas
-  -- On collinear manifold: objective = inverseScalePenalty + 0 = inverseScalePenalty
-  have hdecomp := decomposition Θ f hnd
-  have hR_zero : misalignmentPenalty Θ f = 0 := hcol
-  rw [hdecomp, hR_zero, add_zero]
-  exact collinear_lower_bound Θ f hq hnd hcol hfeas
 
 end

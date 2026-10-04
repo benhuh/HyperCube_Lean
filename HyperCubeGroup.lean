@@ -10,20 +10,21 @@
   - Group isotope characterization
   - Matrix AM-GM and equality rigidity
   - Full gauge group structure and quotient lifting
--/
 
-import HyperCubeGroup.Basic
-import HyperCubeGroup.Decomposition
-import HyperCubeGroup.CollinearManifold
-import HyperCubeGroup.GroupIsotope
-import HyperCubeGroup.Abelian
-import HyperCubeGroup.Spectral
-import HyperCubeGroup.BlockCyclic
-import HyperCubeGroup.MatrixAMGM
-import HyperCubeGroup.Plancherel
-import HyperCubeGroup.PontryaginBridge
-import HyperCubeGroup.ActiveSubspaceGeneric
-import HyperCubeGroup.ActiveSubspace
-import HyperCubeGroup.ActiveSubspaceConstruction
-import HyperCubeGroup.Tikhonov
-import HyperCubeGroup.Coercivity
+import HyperCubeGroup.Foundation.Basic
+import HyperCubeGroup.Foundation.Decomposition
+import HyperCubeGroup.Foundation.CollinearManifold
+import HyperCubeGroup.Foundation.InverseRank
+import HyperCubeGroup.Foundation.GroupIsotope
+import HyperCubeGroup.Foundation.GeneralCollinearity
+import HyperCubeGroup.Foundation.Abelian
+import HyperCubeGroup.Foundation.Spectral
+import HyperCubeGroup.Foundation.BlockCyclic
+import HyperCubeGroup.Foundation.MatrixAMGM
+import HyperCubeGroup.Foundation.Plancherel
+import HyperCubeGroup.Foundation.PontryaginBridge
+import HyperCubeGroup.Foundation.ActiveSubspaceGeneric
+import HyperCubeGroup.Foundation.ActiveSubspace
+import HyperCubeGroup.Foundation.ActiveSubspaceConstruction
+import HyperCubeGroup.Foundation.Tikhonov
+import HyperCubeGroup.Foundation.Coercivity

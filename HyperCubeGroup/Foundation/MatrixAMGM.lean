@@ -1,13 +1,15 @@
 /-
-  HyperCubeGroup.MatrixAMGM
+  HyperCubeGroup.Foundation.MatrixAMGM
 
   The Matrix AM-GM inequality,
-  specialised to the case `tr(XYZ) = 1`. This is the irreducible
+  for arbitrary complex trace, with rigidity specialised to `tr(XYZ) = 1`.
+  This is the irreducible
   "textbook input" from which the unconditional lower bound
   `ℋ(Θ) ≥ 3n²` and its equality rigidity follow on any quasigroup.
 
   Status:
 
+    * `matrix_amgm_general`        — arbitrary-amplitude bound, including zero trace.
     * `matrix_amgm_at_one`         — proved (Tier 2A complete) via
         Schur triangulation of the 3n×3n block-cyclic matrix.
     * `matrix_amgm_at_one_equality` — proved via the equality case
@@ -33,8 +35,8 @@
   `N = 3n`). Specialising and using `Tr(XYZ) = n` yields the conclusion.
 -/
 
-import HyperCubeGroup.BlockCyclic
-import HyperCubeGroup.Plancherel
+import HyperCubeGroup.Foundation.BlockCyclic
+import HyperCubeGroup.Foundation.Plancherel
 
 open Matrix BigOperators Finset Complex
 
@@ -58,6 +60,48 @@ theorem frobNormSq_re_eq_frobNormSq_F_div
     simp [Complex.div_im, Complex.normSq_natCast]
   rw [h1, h2, frobNormSq_F_eq_trace_re A]
   ring
+
+/-- Matrix AM-GM for arbitrary complex normalized trace, including zero trace. -/
+theorem matrix_amgm_general
+    (X Y Z : Matrix (Fin n) (Fin n) ℂ) :
+    3 * ‖(1 / (n : ℂ)) * (X * Y * Z).trace‖ ^ (4 / 3 : ℝ) ≤
+      (frobNormSq (X * Y)).re + (frobNormSq (Y * Z)).re +
+        (frobNormSq (Z * X)).re := by
+  let amplitude : ℝ := ‖(1 / (n : ℂ)) * (X * Y * Z).trace‖
+  let sensitivity : ℝ := (frobNormSq (X * Y)).re +
+    (frobNormSq (Y * Z)).re + (frobNormSq (Z * X)).re
+  have hn : (0 : ℝ) < n := Nat.cast_pos.mpr (Nat.pos_of_ne_zero (NeZero.ne n))
+  have hamplitude : 0 ≤ amplitude := norm_nonneg _
+  have hsensitivity : 0 ≤ sensitivity :=
+    add_nonneg (add_nonneg (frobNormSq_nonneg _) (frobNormSq_nonneg _))
+      (frobNormSq_nonneg _)
+  have htrace : ‖(X * Y * Z).trace‖ = (n : ℝ) * amplitude := by
+    dsimp [amplitude]
+    simp only [norm_mul, norm_div, norm_one, Complex.norm_natCast]
+    field_simp
+  have hsum : frobNormSq_F (X * Y) + frobNormSq_F (Y * Z) +
+      frobNormSq_F (Z * X) = (n : ℝ) * sensitivity := by
+    dsimp [sensitivity]
+    rw [frobNormSq_re_eq_frobNormSq_F_div,
+      frobNormSq_re_eq_frobNormSq_F_div, frobNormSq_re_eq_frobNormSq_F_div]
+    field_simp
+  have hbound := matrix_schur_trace_bound_xyz X Y Z
+  rw [norm_mul, show ‖(3 : ℂ)‖ = (3 : ℝ) by norm_num, htrace, hsum] at hbound
+  have hcube : 27 * amplitude ^ 4 ≤ sensitivity ^ 3 := by
+    have hfactor : (n : ℝ) ^ 4 * (27 * amplitude ^ 4) ≤
+        (n : ℝ) ^ 4 * sensitivity ^ 3 := by
+      nlinarith [hbound]
+    exact le_of_mul_le_mul_left hfactor (by positivity)
+  have hpower : (3 * amplitude ^ (4 / 3 : ℝ)) ^ 3 = 27 * amplitude ^ 4 := by
+    rw [mul_pow, ← Real.rpow_mul_natCast hamplitude]
+    norm_num
+  have hle : 3 * amplitude ^ (4 / 3 : ℝ) ≤ sensitivity := by
+    by_contra hnot
+    have hlt : sensitivity < 3 * amplitude ^ (4 / 3 : ℝ) := lt_of_not_ge hnot
+    have hltcube := pow_lt_pow_left₀ hlt hsensitivity (by norm_num : (3 : ℕ) ≠ 0)
+    rw [hpower] at hltcube
+    linarith
+  exact hle
 
 /-- **Matrix AM–GM at unit normalised trace.**
     For any `X, Y, Z ∈ ℂ^{n × n}` satisfying

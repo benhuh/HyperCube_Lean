@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.ActiveSubspace
+  HyperCubeGroup.Foundation.ActiveSubspace
 
   Active-subspace machinery for the discharge of `collinear_to_unitary_collinear`
   (manuscript Theorem, `thm:rigidity` / Appendix C `app:collinearity_rigidity`).
@@ -65,8 +65,8 @@
       transport through the unitary construction).
 -/
 
-import HyperCubeGroup.Spectral
-import HyperCubeGroup.CollinearManifold
+import HyperCubeGroup.Foundation.Spectral
+import HyperCubeGroup.Foundation.CollinearManifold
 import Mathlib.Analysis.Matrix.Spectrum
 import Mathlib.Analysis.Complex.Order
 import Mathlib.LinearAlgebra.Matrix.PosDef

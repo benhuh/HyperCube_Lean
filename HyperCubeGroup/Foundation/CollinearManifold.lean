@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.CollinearManifold
+  HyperCubeGroup.Foundation.CollinearManifold
 
   Analysis of the Collinear Manifold {Θ | ℛ_δ(Θ) = 0} (Section 4).
 
@@ -7,10 +7,10 @@
   - Lemma (Shared Gram Matrices): Shared Gram matrices X, Y, Z (index-independent, trace-n PSD)
   - Lemma (Normalized Rank κ): Normalized rank κ = rank(X)/n ≤ 1, with κ=1 iff full-rank (unitary)
   - Lemma (Collinear Lower Bound): ℬ_δ(Θ) ≥ 3 Σ δ_abc |T_abc|^{4/3}
-  - Theorem (Optimality within the Collinear Manifold): On the collinear manifold, the minimum of ℋ is achieved by a unitary collinear factorization with value 3|δ|
 -/
 
-import HyperCubeGroup.Decomposition
+import HyperCubeGroup.Foundation.Decomposition
+import HyperCubeGroup.Foundation.ScalarInverseRank
 
 open Matrix BigOperators Finset
 
@@ -43,20 +43,16 @@ def gramC (Θ : HCParams n) (c : Fin n) : Matrix (Fin n) (Fin n) ℂ :=
     A_a(B_b C_c) = (A_a B_b)C_c. The collinearity forces
     A_a A_a† / ‖A_a‖² = C_c† C_c / ‖C_c‖² for all a, c in supported triples.
     Connectivity of the quasigroup support graph propagates this globally. -/
-theorem shared_gram_matrices (Θ : HCParams n) (f : BinOp n)
+theorem shared_gram_matrices_of_nonzero (Θ : HCParams n) (f : BinOp n)
     (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
-    (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f) :
+  (hcol : PerfectCollinearity Θ f)
+  (htrace : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) ≠ 0) :
     ∃ X : Matrix (Fin n) (Fin n) ℂ,
       (∀ a : Fin n, gramA Θ a = X) ∧
       (∀ c : Fin n, (1 / frobNormSq (Θ.C c)) •
         ((Θ.C c).conjTranspose * Θ.C c) = X) := by
   -- Get collinear identities from perfect collinearity
   have hids := (perfectCollinearity_iff_identities Θ f hnd).mp hcol
-  -- Key: For any a, b with c = f(a,b), T_abc = 1 (feasibility on support)
-  have hT : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) = 1 := by
-    intro a b
-    have := hfeas a b (f.op a b)
-    rwa [structureTensor, if_pos rfl] at this
   -- From idA: B_b C_c = (T/α_a) • A_a†
   -- From idC: A_a B_b = (T/γ_c) • C_c†
   -- Matrix associativity: A_a (B_b C_c) = (A_a B_b) C_c
@@ -76,10 +72,8 @@ theorem shared_gram_matrices (Θ : HCParams n) (f : BinOp n)
     rw [hidA, hidC] at hassoc
     simp only [Matrix.mul_smul, Matrix.smul_mul] at hassoc
     -- hassoc: (T/α_a) • A_a A_a† = (T/γ_c) • C_c† C_c
-    -- T = 1 on support:
-    rw [hT a b] at hassoc
-    simp only [one_div] at hassoc ⊢
-    exact hassoc
+    simp only [div_eq_mul_inv, SemigroupAction.mul_smul] at hassoc
+    simpa only [one_div] using (smul_right_injective _ (htrace a b)) hassoc
   -- Fix a₀ (any element) and set X := gramA Θ a₀
   have ⟨a₀⟩ : Nonempty (Fin n) := ⟨⟨0, NeZero.pos n⟩⟩
   use gramA Θ a₀
@@ -110,6 +104,18 @@ theorem shared_gram_matrices (Θ : HCParams n) (f : BinOp n)
     exact key.symm
 
 /-! ## Lemma: Normalized Rank -/
+
+theorem shared_gram_matrices (Θ : HCParams n) (f : BinOp n)
+    (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
+    (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f) :
+    ∃ X : Matrix (Fin n) (Fin n) ℂ,
+      (∀ a : Fin n, gramA Θ a = X) ∧
+      (∀ c : Fin n, (1 / frobNormSq (Θ.C c)) •
+        ((Θ.C c).conjTranspose * Θ.C c) = X) := by
+  apply shared_gram_matrices_of_nonzero Θ f hq hnd hcol
+  intro a b
+  rw [hfeas]
+  simp [structureTensor]
 
 /-- The dimensionless ratio κ_abc = ‖A_a‖² ‖B_b‖² ‖C_c‖² / |T_abc|²
     is constant across the support under collinearity. -/
@@ -350,6 +356,139 @@ theorem normalized_rank_constant (Θ : HCParams n) (f : BinOp n)
     rwa [ge_iff_le, le_div_iff₀ hκ_pos, one_mul] at h1κ
   exact ⟨κ, hκ_triple, hκ_le, hκ_pos⟩
 
+theorem frobNormSq_re_pos_of_ne_zero
+    (factor : Matrix (Fin n) (Fin n) ℂ) (hne : frobNormSq factor ≠ 0) :
+    0 < (frobNormSq factor).re := by
+  rcases lt_or_eq_of_le (frobNormSq_nonneg factor) with hpos | hzero
+  · exact hpos
+  · exact False.elim (hne (Complex.ext hzero.symm (frobNormSq_real factor)))
+
+theorem normalized_rank_constant_of_nonzero (Θ : HCParams n) (f : BinOp n)
+    (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
+    (hcol : PerfectCollinearity Θ f)
+    (htrace : ∀ a b : Fin n, hcProduct Θ a b (f.op a b) ≠ 0) :
+    ∃ κ : ℝ, 0 < κ ∧ κ ≤ 1 ∧
+      ∀ a b : Fin n, kappaTriple Θ a b (f.op a b) = (κ : ℂ) := by
+  obtain ⟨shared, hgramA, hgramC⟩ := shared_gram_matrices_of_nonzero Θ f hq hnd hcol htrace
+  have hids := (perfectCollinearity_iff_identities Θ f hnd).mp hcol
+  let anchor : Fin n := ⟨0, NeZero.pos n⟩
+  have htr : shared.trace = (n : ℂ) := by
+    rw [← hgramA anchor]
+    unfold gramA
+    rw [Matrix.trace_smul, smul_eq_mul, Matrix.trace_mul_comm]
+    have hnorm : ((Θ.A anchor).conjTranspose * Θ.A anchor).trace =
+        (n : ℂ) * frobNormSq (Θ.A anchor) := by
+      unfold frobNormSq frobInner
+      field_simp [(Nat.cast_ne_zero.mpr (NeZero.ne n) : (n : ℂ) ≠ 0)]
+    rw [hnorm]
+    field_simp [hnd.A_pos anchor]
+  have hherm : shared.conjTranspose = shared := by
+    rw [← hgramA anchor]
+    simp only [gramA, Matrix.conjTranspose_smul, Matrix.conjTranspose_mul,
+      Matrix.conjTranspose_conjTranspose, star_div₀, star_one, star_frobNormSq]
+  have hsq : ∀ a b : Fin n, shared * shared =
+      (kappaTriple Θ a b (f.op a b))⁻¹ • shared := by
+    intro a b
+    let c := f.op a b
+    let α := frobNormSq (Θ.A a)
+    let β := frobNormSq (Θ.B b)
+    let γ := frobNormSq (Θ.C c)
+    let prediction := hcProduct Θ a b c
+    have hA : shared = (1 / α) • (Θ.A a * (Θ.A a).conjTranspose) := by
+      rw [← hgramA a]; rfl
+    have hC : shared = (1 / γ) • ((Θ.C c).conjTranspose * Θ.C c) := by
+      rw [← hgramC c]
+    have hAtCt : (Θ.A a).conjTranspose * (Θ.C c).conjTranspose =
+        (starRingEnd ℂ prediction / β) • Θ.B b := by
+      rw [← Matrix.conjTranspose_mul, hids.idB a b, Matrix.conjTranspose_smul,
+        Matrix.conjTranspose_conjTranspose]
+      simp only [star_div₀, star_frobNormSq]
+      rfl
+    have hkey : Θ.A a * (Θ.A a).conjTranspose *
+        ((Θ.C c).conjTranspose * Θ.C c) =
+        (starRingEnd ℂ prediction / β * prediction) • shared := by
+      calc
+        _ = Θ.A a * (((Θ.A a).conjTranspose * (Θ.C c).conjTranspose) * Θ.C c) := by
+          simp only [Matrix.mul_assoc]
+        _ = (starRingEnd ℂ prediction / β) • (Θ.A a * (Θ.B b * Θ.C c)) := by
+          rw [hAtCt, Matrix.smul_mul, Matrix.mul_smul]
+        _ = (starRingEnd ℂ prediction / β) •
+            ((prediction / α) • (Θ.A a * (Θ.A a).conjTranspose)) := by
+          rw [hids.idA a b, Matrix.mul_smul]
+        _ = (starRingEnd ℂ prediction / β * prediction) • shared := by
+          rw [hA]
+          simp only [smul_smul]
+          congr 1
+          ring
+    calc
+      shared * shared = ((1 / α) * (1 / γ)) •
+          (Θ.A a * (Θ.A a).conjTranspose * ((Θ.C c).conjTranspose * Θ.C c)) := by
+        conv_lhs => lhs; rw [hA]
+        conv_lhs => rhs; rw [hC]
+        rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul]
+      _ = _ := by
+        rw [hkey, smul_smul]
+        congr 1
+        dsimp [kappaTriple, α, β, γ, prediction, c]
+        field_simp
+  have hratio : ∀ a b : Fin n, kappaTriple Θ a b (f.op a b) =
+      (((frobNormSq (Θ.A a)).re * (frobNormSq (Θ.B b)).re *
+        (frobNormSq (Θ.C (f.op a b))).re /
+          ‖hcProduct Θ a b (f.op a b)‖ ^ 2 : ℝ) : ℂ) := by
+    intro a b
+    have hreal : ∀ factor : Matrix (Fin n) (Fin n) ℂ,
+        frobNormSq factor = ((frobNormSq factor).re : ℂ) := by
+      intro factor
+      apply Complex.ext <;> simp [frobNormSq_real]
+    unfold kappaTriple
+    rw [hreal (Θ.A a), hreal (Θ.B b), hreal (Θ.C (f.op a b)),
+      mul_comm (hcProduct Θ a b (f.op a b)),
+      ← Complex.normSq_eq_conj_mul_self, Complex.normSq_eq_norm_sq]
+    push_cast
+    rfl
+  let κ : ℝ := (frobNormSq (Θ.A anchor)).re * (frobNormSq (Θ.B anchor)).re *
+    (frobNormSq (Θ.C (f.op anchor anchor))).re /
+      ‖hcProduct Θ anchor anchor (f.op anchor anchor)‖ ^ 2
+  have hκpos : 0 < κ := by
+    exact div_pos (mul_pos (mul_pos
+      (frobNormSq_re_pos_of_ne_zero _ (hnd.A_pos anchor))
+      (frobNormSq_re_pos_of_ne_zero _ (hnd.B_pos anchor)))
+      (frobNormSq_re_pos_of_ne_zero _ (hnd.C_pos _)))
+      (pow_pos (norm_pos_iff.mpr (htrace anchor anchor)) _)
+  have hconst : ∀ a b : Fin n, kappaTriple Θ a b (f.op a b) = (κ : ℂ) := by
+    intro a b
+    have heq := (hsq a b).symm.trans (hsq anchor anchor)
+    have hscalar := congrArg Matrix.trace heq
+    simp only [Matrix.trace_smul, smul_eq_mul, htr] at hscalar
+    have hn : (n : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne n)
+    have hinv := mul_right_cancel₀ hn hscalar
+    exact (inv_injective hinv).trans (hratio anchor anchor)
+  have hnorm : frobNormSq shared = ((κ⁻¹ : ℝ) : ℂ) := by
+    unfold frobNormSq frobInner
+    rw [hherm, hsq anchor anchor, hconst, Matrix.trace_smul, smul_eq_mul, htr]
+    push_cast
+    field_simp [(Nat.cast_ne_zero.mpr (NeZero.ne n) : (n : ℂ) ≠ 0)]
+  have hnormSub : frobNormSq (1 - shared) = ((κ⁻¹ - 1 : ℝ) : ℂ) := by
+    unfold frobNormSq frobInner
+    rw [Matrix.conjTranspose_sub, Matrix.conjTranspose_one, hherm]
+    have hexpand : (1 - shared) * (1 - shared) = 1 - shared - shared + shared * shared := by
+      simp only [sub_mul, mul_sub, Matrix.mul_one, Matrix.one_mul]
+      abel
+    rw [hexpand, Matrix.trace_add, Matrix.trace_sub, Matrix.trace_sub,
+      Matrix.trace_one, Fintype.card_fin, htr, hsq anchor anchor, hconst,
+      Matrix.trace_smul, smul_eq_mul]
+    rw [htr]
+    push_cast
+    field_simp [(Nat.cast_ne_zero.mpr (NeZero.ne n) : (n : ℂ) ≠ 0),
+      (Complex.ofReal_ne_zero.mpr hκpos.ne' : (κ : ℂ) ≠ 0)]
+    ring
+  have hnonneg := frobNormSq_nonneg (1 - shared)
+  rw [hnormSub, Complex.ofReal_re] at hnonneg
+  have hκle : κ ≤ 1 := by
+    have hinv : 1 ≤ 1 / κ := by simpa only [one_div] using (by linarith : 1 ≤ κ⁻¹)
+    simpa only [one_mul] using (le_div_iff₀ hκpos).mp hinv
+  exact ⟨κ, hκpos, hκle, hconst⟩
+
 /-- κ = 1 iff Gram matrices are identity (full-rank / unitary factorization). -/
 theorem kappa_one_iff_unitary (Θ : HCParams n) (f : BinOp n)
     (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
@@ -575,7 +714,7 @@ theorem collinear_lower_bound (Θ : HCParams n) (f : BinOp n)
     _ = 3 * (n : ℝ) ^ 2 := by
         simp [Finset.sum_const, Fintype.card_fin, sq]; ring
 
-/-! ## Theorem: Optimality within the Collinear Manifold -/
+/-! ## Unitary Collinear Factorizations -/
 
 /-- A collinear factorization is **unitary** if all factor slices are unitary
     (in the normalized sense: ‖A_a‖² = 1, A_a A_a† = I). -/

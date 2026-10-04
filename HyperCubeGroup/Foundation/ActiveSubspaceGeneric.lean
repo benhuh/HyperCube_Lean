@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.ActiveSubspaceGeneric
+  HyperCubeGroup.Foundation.ActiveSubspaceGeneric
 
   Active-subspace machinery parameterised over a generic matrix
   `M : Matrix (Fin n) (Fin n) ℂ` (with `frobNormSq M ≠ 0`).
@@ -19,8 +19,8 @@
     * Lifted unitary `U · Qᴴ`
 -/
 
-import HyperCubeGroup.Spectral
-import HyperCubeGroup.CollinearManifold
+import HyperCubeGroup.Foundation.Spectral
+import HyperCubeGroup.Foundation.CollinearManifold
 import Mathlib.Analysis.Matrix.Spectrum
 import Mathlib.Analysis.Complex.Order
 import Mathlib.LinearAlgebra.Matrix.PosDef

@@ -2,33 +2,49 @@
 
 Formal verification of the HyperCube tensor factorization model for finite quasigroups, accompanying the updated ICLR 2027 manuscript.
 
-This repository mechanizes the orthogonal decomposition of the objective, the unit-normalized-trace Matrix AM-GM inequality, the unitary group-isotope equivalence, and the feasible landscape bounds. The precise correspondence and remaining gaps are documented below.
+This repository mechanizes the orthogonal decomposition of the objective, the amplitude-dependent inverse-rank and Matrix AM-GM bounds, the dynamic unconstrained bound, the unitary and general group-isotope equivalences, and the feasible landscape bounds. The precise correspondence and remaining gaps are documented below.
+
+<!-- The foundational development lives under `HyperCubeGroup/Foundation`. Imports retain that path, for example `import HyperCubeGroup.Foundation.GeneralCollinearity`.  -->
 
 ## Named Axiom-Free Theorems
 
 For each named theorem below, `#print axioms <name>` uses only standard Lean background axioms (a subset of `[propext, Classical.choice, Quot.sound]`), not project-specific axioms. The scope column distinguishes the Lean statement from stronger manuscript claims.
 
-| Manuscript | LaTeX label | Lean name | File | Formalized scope |
-| --- | --- | --- | --- | --- |
-| Lemma 1: Decomposition | `lem:decomposition` | `decomposition`, `objective_ge_inverseScalePenalty` | [Decomposition.lean](HyperCubeGroup/Decomposition.lean) | Objective decomposition and lower bound for nondegenerate parameters |
-| Lemma 2: Shared Gram Matrices | `lem:index-independent-gram` | `shared_gram_matrices` | [CollinearManifold.lean](HyperCubeGroup/CollinearManifold.lean) | Shared normalized Gram matrix under feasible, nondegenerate collinearity |
-| Lemma 3: Normalized Rank | `lem:proj-kappa` | `normalized_rank_constant`, `kappa_one_iff_unitary` | [CollinearManifold.lean](HyperCubeGroup/CollinearManifold.lean) | Constant positive ratio, bound `κ ≤ 1`, and identity Gram matrices at `κ = 1` |
-| Lemma 4: Scalar AM-GM Bound | `lem:AMGM` | `collinear_lower_bound` | [CollinearManifold.lean](HyperCubeGroup/CollinearManifold.lean) | Feasible specialization `ℬ_δ ≥ 3n²` |
-| Lemma 5: Matrix AM-GM | `lem:app_matrix_amgm` | `matrix_amgm`, `matrix_amgm_equality` | [MatrixAMGM.lean](HyperCubeGroup/MatrixAMGM.lean) | Unit normalized trace: cyclic norm sum at least 3; equality forces unitary factors and `XYZ = I` |
-| Theorem 7: Absolute Feasible Bound | `thm:absolute_lower_bound` | `absolute_feasible_bound_lower`, `absolute_feasible_bound_rigidity` | [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean) | Feasible lower bound and equality iff unitary collinearity |
-| Theorem 8: UC ⟺ Group Isotope | `thm:unitary_equivalence` | `unitary_collinearity_iff_group_isotope` | [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean) | Full unitary existence equivalence |
-| Theorem 9: Global Optimality and Associativity Gap | `thm:global_optimality_dichotomy` | `global_optimality_dichotomy`, `strict_gap_non_group_unconditional` | [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean) | Group-isotope floor attainment; pointwise strict bound for every feasible non-group factorization |
-| Lemma 10: Synchronization | `lem:app_synchronization` | `synchronization` | [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean) | Unitary synchronizing gauge for loops |
-| Lemma 11: Homomorphism and Injectivity | `lem:app_homomorphism` | `synchronized_homomorphism`, `synchronized_injective` | [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean) | Homomorphism and injectivity of the synchronized map |
-| Lemma 12: Uniqueness of Representation | `lem:app_representation_uniqueness` | `representation_unique` | [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean) | Regular-character trace identity only; **not full unitary equivalence** |
-| Lemma 13: Group-Isotope Sufficiency | `lem:app_group_existence` | `group_isotope_admits_unitary_collinear` | [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean) | Explicit left-regular construction of a unitary collinear factorization |
-| Lemma 14: Spectral Trace-Frobenius Bound | `lem:spectral_trace_frob` | `IsUpperTriangular.norm_trace_cubed_pow_four_le`, `matrix_schur_trace_bound_xyz` | [Spectral.lean](HyperCubeGroup/Spectral.lean), [BlockCyclic.lean](HyperCubeGroup/BlockCyclic.lean) | Upper-triangular bound, Schur reduction, and block-cyclic specialization |
+| Manuscript | Lean name | File | Formalized scope |
+| --- | --- | --- | --- |
+| Lemma 1: Decomposition | `decomposition`, `objective_ge_inverseScalePenalty` | [Decomposition.lean](HyperCubeGroup/Foundation/Decomposition.lean) | Objective decomposition and lower bound for nondegenerate parameters |
+| Lemma 2: Shared Gram Matrices | `shared_gram_matrices`, `shared_gram_matrices_of_nonzero` | [CollinearManifold.lean](HyperCubeGroup/Foundation/CollinearManifold.lean) | Shared normalized Gram matrix under nondegenerate collinearity and nonzero supported predictions; feasible specialization retained |
+| Lemma 3: Normalized Rank | `normalized_rank_constant`, `normalized_rank_constant_of_nonzero`, `kappa_one_iff_unitary` | [CollinearManifold.lean](HyperCubeGroup/Foundation/CollinearManifold.lean) | Common positive ratio, bound `κ ≤ 1`, and identity Gram matrices at `κ = 1` in the feasible case |
+| Lemma 4: Scalar AM-GM Bound and Inverse-rank Penalty | `collinear_inverse_rank_bound`, `collinear_dynamic_floor_eq_iff`, `collinear_lower_bound` | [InverseRank.lean](HyperCubeGroup/Foundation/InverseRank.lean), [CollinearManifold.lean](HyperCubeGroup/Foundation/CollinearManifold.lean) | Full amplitude-dependent inverse-rank bound under collinearity and nonzero supported predictions; nondegeneracy follows automatically; sharp equality iff all squared slice norms are equal; dynamic-floor equality additionally requires `κ = 1` |
+| Lemma 5: Matrix AM-GM | `matrix_amgm_general`, `matrix_amgm`, `matrix_amgm_equality` | [MatrixAMGM.lean](HyperCubeGroup/Foundation/MatrixAMGM.lean) | Arbitrary complex normalized trace, including zero; equality rigidity at unit normalized trace |
+| Theorem 6: Dynamic Unconstrained Bound | `dynamic_unconstrained_bound`, `dynamicFloor_eq_of_factorizes` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Prediction-dependent floor for arbitrary parameters on any binary operation; no feasibility, nondegeneracy, or collinearity hypothesis |
+| Theorem 7: Absolute Feasible Bound | `absolute_feasible_bound_lower`, `absolute_feasible_bound_rigidity` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Feasible lower bound and equality iff unitary collinearity |
+| Theorem 8: UC ⟺ Group Isotope | `unitary_collinearity_iff_group_isotope` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Full unitary existence equivalence |
+| Theorem 9: Global Optimality and Associativity Gap | `global_optimality_dichotomy`, `strict_gap_non_group`, `strict_gap_non_group_unconditional` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Group-isotope floor attainment; pointwise strict bound for every feasible non-group factorization |
+| Lemma 10: Synchronization | `synchronization` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Unitary synchronizing gauge for loops |
+| Lemma 11: Homomorphism and Injectivity | `synchronized_homomorphism`, `synchronized_injective` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Homomorphism and injectivity of the synchronized map |
+| Lemma 12: Uniqueness of Representation | `representation_unique` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Regular-character trace identity only; **not full unitary equivalence** |
+| Lemma 13: Group-Isotope Sufficiency | `group_isotope_admits_unitary_collinear` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Explicit left-regular construction of a unitary collinear factorization |
+| Lemma 14: Spectral Trace-Frobenius Bound | `IsUpperTriangular.norm_trace_cubed_pow_four_le`, `matrix_schur_trace_bound_xyz` | [Spectral.lean](HyperCubeGroup/Foundation/Spectral.lean), [BlockCyclic.lean](HyperCubeGroup/Foundation/BlockCyclic.lean) | Upper-triangular bound, Schur reduction, and block-cyclic specialization |
+| Theorem 15: General Collinearity ⟺ Group Isotope | `collinear_iff_group_isotope`, `collinear_to_unitary_collinear` | [GeneralCollinearity.lean](HyperCubeGroup/Foundation/GeneralCollinearity.lean) | Full feasible collinear existence equivalence, including rank-deficient and imbalanced factors; existence of a new unitary factorization |
 
-Theorem 6 (`thm:unconditional_bound`, Dynamic Unconstrained Bound) has no corresponding arbitrary-parameter theorem in the core modules listed here. Despite its name, `universal_lower_bound_general` requires `Factorizes Θ f` and proves the feasible floor, not the dynamic unconstrained bound.
+Theorem 6 proves
+
+$$\mathcal H(\Theta)\ge 3\sum_{a,b}|T_{ab,f(a,b)}(\Theta)|^{4/3}.$$
+
+This includes vanishing supported predictions. Under exact factorization, `dynamicFloor_eq_of_factorizes` reduces the floor to `3n²`; Theorem 7 supplies its feasible equality characterization.
+
+On the collinear set with nonzero supported predictions, Lemma 4 proves
+
+$$\mathcal H(\Theta)=\mathcal B_\delta(\Theta)\ge 3\kappa^{-1/3}\sum_{a,b}|T_{ab,f(a,b)}(\Theta)|^{4/3}.$$
+
+Equality in this sharper bound holds exactly when all squared slice norms are equal. Equality with the unpenalized dynamic floor additionally requires `κ = 1`.
+
+`nonzero_supported_predictions_implies_nondegenerate` proves that nonzero supported predictions imply nonzero slice norms for a quasigroup, so Lemma 4 requires no separate nondegeneracy premise. Under feasibility, supported predictions equal 1. The common-positive-κ formula is stated on this nonzero-prediction domain; Theorem 6 also covers vanishing predictions.
 
 ## Gauge-Quotient Theorems (Axiom-Free)
 
-The feasible landscape results are also lifted to the combined gauge quotient `Coercivity.FeasibleCombinedGaugeQuotient n f` in [Coercivity.lean](HyperCubeGroup/Coercivity.lean). Names below are in the `Coercivity` namespace:
+The feasible landscape results are also lifted to the combined gauge quotient `Coercivity.FeasibleCombinedGaugeQuotient n f` in [Coercivity.lean](HyperCubeGroup/Foundation/Coercivity.lean). Names below are in the `Coercivity` namespace:
 
 - `absolute_feasible_bound_lower_feasibleQuotient`: Theorem 7 lower bound `ℋ(Θ).re ≥ 3n²`.
 - `case2_strict_gap_non_group_feasibleQuotient`: Theorem 9 pointwise strict bound for non-group targets.
@@ -53,28 +69,33 @@ The norms are normalized Frobenius norms. For a quasigroup table, `|δ| = n²`. 
 | File | Lines | Description |
 | ------ | ------: | ------------- |
 | `Basic.lean` | 260 | Core definitions: `BinOp`, `HCParams`, `Factorizes`, `objective`, `frobInner`, `frobNormSq` |
-| `Decomposition.lean` | 869 | Objective decomposition `ℋ = ℬ_δ + ℛ_δ`, misalignment residuals |
-| `CollinearManifold.lean` | 589 | Shared Gram matrices, `kappaTriple` analysis, `κ = 1 ⟺ unitary`, AM-GM lower bound |
-| `GroupIsotope.lean` | 1308 | Group isotopes, isotopy transfer, unitary collinear factorizations, `ℋ = 3n²` for group isotopes |
+| `Decomposition.lean` | 888 | Objective decomposition `ℋ = ℬ_δ + ℛ_δ`, misalignment residuals |
+| `CollinearManifold.lean` | 728 | Shared Gram matrices and common κ for nonzero supported predictions; feasible unitary and lower-bound results |
+| `ScalarInverseRank.lean` | 122 | Scalar inverse-rank AM-GM inequality and sharp equality criterion |
+| `InverseRank.lean` | 210 | Full collinear inverse-rank bound, global norm balancing, and dynamic-floor equality at κ = 1 |
+| `GroupIsotope.lean` | 1235 | Dynamic unconstrained bound, isotopy transfer, unitary equivalence, and feasible landscape bounds |
+| `GeneralCollinearity.lean` | 195 | General collinearity equivalence via associative sandwich products and feasibility |
 | `Abelian.lean` | 312 | Diagonal rep, full U(n)³ gauge invariance, cyclic group instance |
-| `MatrixAMGM.lean` | 297 | Unit-normalized-trace Matrix AM-GM and equality rigidity |
+| `MatrixAMGM.lean` | 341 | Arbitrary-amplitude Matrix AM-GM and unit-trace equality rigidity |
 | `BlockCyclic.lean` | 519 | Block-cyclic 3n×3n matrix construction; structural equivalences |
 | `Spectral.lean` | 1332 | Schur triangulation, trace bounds, equality cases |
 | `Plancherel.lean` | 387 | Plancherel infrastructure: ℋ = mass matrix form, Fourier sums |
 | `PontryaginBridge.lean` | 516 | `IsAbelianGroup.toAddCommGroup`, `characterBasis`, `abelian_admits_diagRep_optimum` |
 | `ActiveSubspace.lean` | 740 | Active-subspace machinery |
-| `ActiveSubspaceConstruction.lean` | 851 | Explicit discharge of `collinear_to_unitary_collinear` for full-rank cases |
+| `ActiveSubspaceConstruction.lean` | 851 | Explicit norm-rescaling conversion to unitary collinearity for full-rank cases |
 | `ActiveSubspaceGeneric.lean` | 559 | Generic `gramOf` machinery |
 | `Tikhonov.lean` | 639 | HCParams normed/finite-dim structure; Weierstrass + regularized existence theorems |
-| `Coercivity.lean` | 4056 | Full gauge group structure, invariances, gauge orbit + setoid + quotient + lifted predicates |
+| `Coercivity.lean` | 4053 | Full gauge group structure, invariances, gauge orbit + setoid + quotient + lifted predicates |
 
-**Core totals:** approximately 13,250 lines of Lean 4, **1 project axiom** (not used in the manuscript), **0 proof `sorry`s**.
+All files in this table live in `HyperCubeGroup/Foundation`.
+
+**Core totals:** 13,887 lines of Lean 4, **0 project axioms**, **0 proof `sorry`s**.
 
 ## Core Formalized Results
 
-**Orthogonal Decomposition and Geometric Alignment (Section 4).** `decomposition` splits `ℋ = ℬ_δ + ℛ_δ`; `shared_gram_matrices`, `normalized_rank_constant`, and `kappa_one_iff_unitary` develop the feasible collinear geometry. `collinear_lower_bound` proves the feasible scalar AM-GM floor.
+**Orthogonal Decomposition and Geometric Alignment (Section 4).** `decomposition` splits `ℋ = ℬ_δ + ℛ_δ`. `shared_gram_matrices_of_nonzero` and `normalized_rank_constant_of_nonzero` extend the shared-Gram and common-κ results beyond exact fitting to nonzero supported predictions. `collinear_inverse_rank_bound` proves Lemma 4's sharp inverse-rank bound and global equality criterion; `collinear_dynamic_floor_eq_iff` supplies its κ = 1 equality clause. The feasible specialization `collinear_lower_bound` remains available.
 
-**Global Optimality and Associativity Gap (Section 5).** `matrix_amgm` and `matrix_amgm_equality` establish Lemma 5 at unit normalized trace using Schur triangulation. `absolute_feasible_bound_lower` and `absolute_feasible_bound_rigidity` prove Theorem 7's feasible floor and equality geometry. `unitary_collinearity_iff_group_isotope` proves Theorem 8. `global_optimality_dichotomy` combines constructive floor attainment for group isotopes with `strict_gap_non_group_unconditional` for non-group targets.
+**Global Optimality and Associativity Gap (Section 5).** `matrix_amgm_general` establishes Lemma 5's arbitrary-amplitude inequality; `matrix_amgm_equality` proves rigidity at unit normalized trace. `dynamic_unconstrained_bound` proves Theorem 6. `absolute_feasible_bound_lower` and `absolute_feasible_bound_rigidity` prove Theorem 7's feasible floor and equality geometry. `unitary_collinearity_iff_group_isotope` proves Theorem 8. `global_optimality_dichotomy` combines constructive floor attainment for group isotopes with **the pointwise strict bound for non-group targets**. **Both `strict_gap_non_group` and `strict_gap_non_group_unconditional` remain available.**
 
 **Deferred Proofs (Appendices B and C).** `synchronization`, `synchronized_homomorphism`, and `synchronized_injective` implement the unitary necessity argument. `group_isotope_admits_unitary_collinear` supplies sufficiency via `leftRegularRep`. `representation_unique` establishes the regular-character trace identity. The spectral and block-cyclic modules provide the Matrix AM-GM proof infrastructure.
 
@@ -82,28 +103,32 @@ The norms are normalized Frobenius norms. For a quasigroup table, `|δ| = n²`. 
 
 These results remain in the core library but are not active numbered statements in the updated manuscript:
 
-- `collinear_iff_group_isotope`: general feasible nondegenerate collinearity iff group isotopy; depends on the remaining project axiom.
-- `optimality_within_collinear_manifold`: existence of a unitary optimum from a feasible collinear factorization, plus the collinear lower bound; depends on that same axiom and does not assert uniqueness.
 - `Tikhonov.regularized_existence`: existence for the coercively regularized objective; no current manuscript theorem number.
 - Active-subspace, abelian/Fourier, and gauge-quotient infrastructure extend the foundational results.
 
-## Axioms (1)
+## General Collinearity--Associativity Equivalence (Theorem 15) 
+<!-- [is it important to explain theorem 15 in detail in this readme file?] -->
 
-The core contains no proof `sorry`s. Its single private project axiom, `collinear_to_unitary_collinear` in [GroupIsotope.lean](HyperCubeGroup/GroupIsotope.lean), assumes that a feasible nondegenerate collinear factorization implies the existence of a unitary collinear factorization.
+[GeneralCollinearity.lean](HyperCubeGroup/Foundation/GeneralCollinearity.lean) proves that a finite quasigroup admits a feasible collinear factorization if and only if it is a group isotope. The proof includes rank-deficient and imbalanced factors and derives nondegeneracy from feasibility.
 
-This only concerns the general/rank-deficient extension, which is not used in the current manuscript, not its active Theorem 8. [ActiveSubspaceConstruction.lean](HyperCubeGroup/ActiveSubspaceConstruction.lean) discharges the `κ = 1` case. <!-- [what does 'discharges the `κ = 1` case' mean??] -->
- <!-- the general case remains open.  -->
-The named feasible landscape and unitary equivalence results above do not depend on this axiom.
+After isotopy to a loop with identity `e`, the cyclic collinearity identities define an associative sandwich product of output adjoints: with `D_a = C_a†` and `K = B_e† A_e†`, one has `D_a K D_b = λ_ab D_(a∘b)` with nonzero coefficients. Feasibility distinguishes nonzero scalar multiples of different output slices, forcing the loop operation to be associative. Neither the slices nor `K` need to be invertible.
+
+The existing left-regular construction then supplies a new unitary collinear factorization. Thus `collinear_to_unitary_collinear` is a proved theorem, not an axiom; it does not assert that norm-rescaling or extending the original slices preserves feasibility. `collinear_implies_group_isotope` also remains available with a complete proof.
+
+The separate active-subspace construction is additional geometric infrastructure, not a prerequisite for Theorem 15. In its full-rank `κ = 1` case, it explicitly proves that norm-rescaling the original slices gives a feasible unitary collinear factorization.
+
+## Proof Assumptions
+
+The foundational sources contain no project axioms and no proof `sorry`s. The named results use only standard Lean background axioms: `propext`, `Classical.choice`, and `Quot.sound`.
 
 ## Scope of Formalization (What is not Mechanized)
 
-The manuscript coverage focuses on the **algebraic and geometric** results in Sections 4 and 5 and Appendices B and C.
+The manuscript coverage focuses on the **algebraic and geometric** results in Sections 4 and 5, their supporting appendix proofs, and the general collinearity equivalence of Theorem 15.
 The following manuscript components remain outside the scope of formalization:
 
-* **Hessian eigenvalue analysis (Appendix F.2):**
-- **Arbitrary-amplitude bounds:** the full complex-amplitude version of Lemma 5, the general inverse-rank/amplitude formulation of Lemma 4, and Theorem 6's dynamic unconstrained bound are not established by the core declarations listed above.
+- **Hessian eigenvalue analysis (Appendix F.2):** the manuscript's Hessian eigenvalue analysis is not formalized here.
+<!-- - **Positive infimum gap:** the Lean non-group theorem proves `ℋ(Θ) > 3n²` for each feasible `Θ`. This alone does not prove the manuscript's stronger `inf ℋ > 3n²`, which would require a uniform gap or an appropriate attainment argument. [Do we need to keep this comment? is this crucial to have?] -->
 - **Representation uniqueness:** `representation_unique` proves the character identity used in Lemma 12, *not the character-theoretic unitary equivalence to the left-regular representation or the full minimizer classification asserted in Theorem 9*.
-- **General collinearity:** the rank-deficient extension remains axiom-dependent and is not an active theorem in the updated manuscript.
 - **Empirical results and training dynamics:** the experiments in Section 6 and Appendix D, numerical trade-offs, and optimizer convergence are not formalized by these algebraic results.
 
 ## Mathlib Upstream Candidates
@@ -123,5 +148,16 @@ Run from the repository root:
 
 ```bash
 lake build
-lake env lean CheckAxioms.lean
 ```
+
+To inspect a particular theorem's assumptions, import its module and use `#print axioms`, for example:
+
+```lean
+import HyperCubeGroup.Foundation.GeneralCollinearity
+
+#print axioms collinear_iff_group_isotope
+#print axioms collinear_to_unitary_collinear
+#print axioms strict_gap_non_group
+```
+
+These declarations report only standard Lean background axioms. No separate test or audit package is required to check the foundational proofs.

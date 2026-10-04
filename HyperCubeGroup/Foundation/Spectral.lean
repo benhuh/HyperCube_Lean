@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.Spectral
+  HyperCubeGroup.Foundation.Spectral
 
   Spectral-theory lemmas used by the Matrix AM-GM proof (Lemma).
 
@@ -18,7 +18,7 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import HyperCubeGroup.Basic
+import HyperCubeGroup.Foundation.Basic
 
 open Matrix BigOperators Complex
 

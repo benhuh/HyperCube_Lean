@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.BlockCyclic
+  HyperCubeGroup.Foundation.BlockCyclic
 
   The 3n × 3n block-cyclic matrix
     M = [[0, X, 0],
@@ -18,7 +18,7 @@
     * `trace_blockCyclic_cb` — `Tr(M³) = 3 · Tr(XYZ)`.
 -/
 
-import HyperCubeGroup.Spectral
+import HyperCubeGroup.Foundation.Spectral
 import Mathlib.Logic.Equiv.Fin.Basic
 
 open Matrix BigOperators Complex

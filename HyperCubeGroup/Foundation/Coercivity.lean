@@ -1,5 +1,5 @@
 /-
-  HyperCubeGroup.Coercivity
+  HyperCubeGroup.Foundation.Coercivity
 
   Coercivity bounds and gauge stability from Manuscript Appendix F.
   This is Tier 3B in the README roadmap and the largest remaining
@@ -24,10 +24,10 @@
   stall on flat directions or saddle structures.
 -/
 
-import HyperCubeGroup.Basic
-import HyperCubeGroup.Decomposition
-import HyperCubeGroup.Abelian
-import HyperCubeGroup.Tikhonov
+import HyperCubeGroup.Foundation.Basic
+import HyperCubeGroup.Foundation.Decomposition
+import HyperCubeGroup.Foundation.Abelian
+import HyperCubeGroup.Foundation.Tikhonov
 
 open Matrix BigOperators Complex
 
