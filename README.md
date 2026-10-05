@@ -73,11 +73,11 @@ The norms are normalized Frobenius norms. For a quasigroup table, `|δ| = n²`. 
 | `InverseRank.lean` | 210 | Full collinear inverse-rank bound, global norm balancing, and dynamic-floor equality at κ = 1 |
 | `GroupIsotope.lean` | 1235 | Dynamic unconstrained bound, isotopy transfer, unitary equivalence, and feasible landscape bounds |
 | `GeneralCollinearity.lean` | 195 | General collinearity equivalence via associative sandwich products and feasibility |
-| [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean) | 285 | Feasible loop synchronization, full unitary equivalence, and group-isotope global minimizer classification up to isotopy and three unitary gauges |
-| [Representation/Characters.lean](HyperCubeGroup/Foundation/Representation/Characters.lean) | 130 | Character equality implies unitary equivalence; generic machinery in `HyperCubeGroup.Manuscript` |
-| [Representation/UnitaryIntertwiner.lean](HyperCubeGroup/Foundation/Representation/UnitaryIntertwiner.lean) | 90 | Unitarization of invertible intertwiners in `HyperCubeGroup.Manuscript` |
-| [Representation/UnitaryMatrix.lean](HyperCubeGroup/Foundation/Representation/UnitaryMatrix.lean) | 8 | Shared unitary matrix type in `HyperCubeGroup.ThreeFamilySynchronization` |
-| [External/CharacterRigidity.lean](HyperCubeGroup/Foundation/External/CharacterRigidity.lean) | 250 | Licensed character-rigidity proof; Apache 2.0 license retained in [External/LICENSE](HyperCubeGroup/Foundation/External/LICENSE) |
+| `RepresentationClassification.lean` | 285 | Feasible loop synchronization, full unitary equivalence, and group-isotope global minimizer classification up to isotopy and three unitary gauges |
+| `Representation/Characters.lean` | 130 | Character equality implies unitary equivalence; generic machinery in `HyperCubeGroup.Manuscript` |
+| `Representation/UnitaryIntertwiner.lean` | 90 | Unitarization of invertible intertwiners in `HyperCubeGroup.Manuscript` |
+| `Representation/UnitaryMatrix.lean` | 8 | Shared unitary matrix type in `HyperCubeGroup.ThreeFamilySynchronization` |
+| `External/CharacterRigidity.lean` | 250 | Licensed character-rigidity proof; Apache 2.0 license retained in [External/LICENSE](HyperCubeGroup/Foundation/External/LICENSE) |
 | `Abelian.lean` | 312 | Diagonal rep, full U(n)³ gauge invariance, cyclic group instance |
 | `MatrixAMGM.lean` | 341 | Arbitrary-amplitude Matrix AM-GM and unit-trace equality rigidity |
 | `BlockCyclic.lean` | 519 | Block-cyclic 3n×3n matrix construction; structural equivalences |
