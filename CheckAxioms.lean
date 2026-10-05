@@ -28,7 +28,6 @@ open HyperCubeGroup
 #print axioms absolute_feasible_bound_rigidity
 #print axioms unitary_collinearity_iff_group_isotope
 #print axioms global_optimality_dichotomy
-#print axioms strict_gap_non_group_unconditional
 #print axioms strict_gap_non_group
 #print axioms loop_collinear_associative
 #print axioms general_collinear_implies_group_isotope

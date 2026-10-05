@@ -3687,7 +3687,7 @@ theorem case2_strict_gap_non_group_feasibleQuotient
   induction q using Quotient.ind with
   | _ Θ =>
     show (_root_.objective Θ f).re > 3 * (n : ℝ) ^ 2
-    exact strict_gap_non_group_unconditional f hq hnotgi Θ hfeas_q
+    exact strict_gap_non_group f hq hnotgi Θ hfeas_q
 
 /-- No-optimal characterization at the gauge quotient: if `f` is not a group
     isotope, no feasible quotient class is optimal. -/

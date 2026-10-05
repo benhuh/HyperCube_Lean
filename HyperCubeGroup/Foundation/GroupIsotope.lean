@@ -18,7 +18,6 @@
     with `A_a B_b C_c = I_n` at every supported triple.
   - `equality_rigidity_implies_perfect_collinearity`: ℋ(Θ) = 3|δ| ⟹ ℛ_δ = 0.
   - `strict_gap_non_group`: for non-group quasigroups, H > 3|δ| strictly.
-  Now unconditional.
 
   ## Descriptively named axiom-free landscape theorems
 
@@ -29,7 +28,7 @@
   - `absolute_feasible_bound_lower`          (Theorem lower-bound half: H ≥ 3|δ| for feasible Θ)
   - `absolute_feasible_bound_rigidity`       (Theorem rigidity half: H = 3|δ| ⟺ UC for feasible Θ)
   - `global_optimality_dichotomy`           (Theorem: Global Optimality and Associativity Gap)
-  - `strict_gap_non_group_unconditional`              (Theorem Case 2)
+  - `strict_gap_non_group`              (Theorem Case 2)
 
   Plus, in `Tikhonov.lean`:
   - `regularized_existence`                 (Theorem: existence)
@@ -1117,7 +1116,7 @@ theorem equality_rigidity_implies_perfect_collinearity
     The global landscape dichotomy does not require the general
     collinearity equivalence.
 -/
-theorem strict_gap_non_group_unconditional (f : BinOp n) (hq : IsQuasigroup f)
+theorem strict_gap_non_group (f : BinOp n) (hq : IsQuasigroup f)
     (hnotgi : ¬ IsGroupIsotope f) :
     ∀ Θ : HCParams n, Factorizes Θ f →
       (objective Θ f).re > 3 * (n : ℝ) ^ 2 := by
@@ -1149,12 +1148,6 @@ theorem strict_gap_non_group_unconditional (f : BinOp n) (hq : IsQuasigroup f)
       exact (hpp a b).2.2.1 }
   -- Apply axiom-free Theorem (unitary case).
   exact hnotgi (unitary_collinear_implies_group_isotope f hq ⟨Θ, huc⟩)
-
-theorem strict_gap_non_group (f : BinOp n) (hq : IsQuasigroup f)
-    (hnotgi : ¬ IsGroupIsotope f) :
-    ∀ Θ : HCParams n, Factorizes Θ f →
-      (objective Θ f).re > 3 * (n : ℝ) ^ 2 :=
-  strict_gap_non_group_unconditional f hq hnotgi
 
 /-- **Theorem (Unitary Collinearity ⟺ Group Isotope, axiom-free).** For any
     finite quasigroup `f`, a unitary collinear factorisation exists if and only if
@@ -1230,6 +1223,6 @@ theorem global_optimality_dichotomy (f : BinOp n) (hq : IsQuasigroup f) :
     obtain ⟨Θ_opt, huc⟩ := group_isotope_admits_unitary_collinear f hq hgi
     exact ⟨Θ_opt, huc, uc_objective_value Θ_opt f huc⟩
   · -- Case 2: non-group isotope ⟹ strict gap.
-    exact strict_gap_non_group_unconditional f hq
+    exact strict_gap_non_group f hq
 
 end
