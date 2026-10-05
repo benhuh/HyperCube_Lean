@@ -1,6 +1,6 @@
 # HyperCube Group Discovery — Lean 4 Formalization
 
-Formal verification of the HyperCube tensor factorization model for finite quasigroups, accompanying the updated ICLR 2027 manuscript.
+Formal verification of the HyperCube tensor factorization model for finite quasigroups, accompanying our submitted manuscript.
 
 This repository mechanizes the orthogonal decomposition of the objective, the amplitude-dependent inverse-rank and Matrix AM-GM bounds, the dynamic unconstrained bound, the unitary and general group-isotope equivalences, and the feasible landscape bounds. The precise correspondence and remaining gaps are documented below.
 
@@ -106,7 +106,7 @@ All files in this table live recursively under `HyperCubeGroup/Foundation`.
 
 ## Additional Repository Results
 
-These results remain in the core library but are not active numbered statements in the updated manuscript:
+These results remain in the core library but are not active numbered statements in the manuscript:
 
 - `Tikhonov.regularized_existence`: existence for the coercively regularized objective; no current manuscript theorem number.
 - Active-subspace, abelian/Fourier, and gauge-quotient infrastructure extend the foundational results.

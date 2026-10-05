@@ -1,7 +1,5 @@
 /-
-  HyperCubeGroup: Lean 4 Formalization of
-  "Associativity as Occam's Razor:
-   Differentiable Measure of Algebraic Complexity"
+  HyperCubeGroup: Lean 4 Formalization
 
   Core results formalized:
   - Orthogonal decomposition H = B + R

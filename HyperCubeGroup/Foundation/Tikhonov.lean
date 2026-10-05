@@ -3,7 +3,7 @@
 
   Existence of global minimisers via Tikhonov regularisation
   This is additional repository infrastructure, not an active numbered
-  statement in the updated manuscript.
+  statement in the manuscript.
 
   ## Main results
 
