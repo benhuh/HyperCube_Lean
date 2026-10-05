@@ -8,6 +8,7 @@
   - Group isotope characterization
   - Matrix AM-GM and equality rigidity
   - Full gauge group structure and quotient lifting
+-/
 
 import HyperCubeGroup.Foundation.Basic
 import HyperCubeGroup.Foundation.Decomposition
