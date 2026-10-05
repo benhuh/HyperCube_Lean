@@ -4,8 +4,6 @@ Formal verification of the HyperCube tensor factorization model for finite quasi
 
 This repository mechanizes the orthogonal decomposition of the objective, the amplitude-dependent inverse-rank and Matrix AM-GM bounds, the dynamic unconstrained bound, the unitary and general group-isotope equivalences, and the feasible landscape bounds. The precise correspondence and remaining gaps are documented below.
 
-<!-- The foundational development lives under `HyperCubeGroup/Foundation`. Imports retain that path, for example `import HyperCubeGroup.Foundation.GeneralCollinearity`.  -->
-
 ## Named Axiom-Free Theorems
 
 For each named theorem below, `#print axioms <name>` uses only standard Lean background axioms (a subset of `[propext, Classical.choice, Quot.sound]`), not project-specific axioms. The scope column distinguishes the Lean statement from stronger manuscript claims.
@@ -112,7 +110,6 @@ These results remain in the core library but are not active numbered statements 
 - Active-subspace, abelian/Fourier, and gauge-quotient infrastructure extend the foundational results.
 
 ## General Collinearity--Associativity Equivalence (Theorem 15) 
-<!-- [is it important to explain theorem 15 in detail in this readme file?] -->
 
 [GeneralCollinearity.lean](HyperCubeGroup/Foundation/GeneralCollinearity.lean) proves that a finite quasigroup admits a feasible collinear factorization if and only if it is a group isotope. The proof includes rank-deficient and imbalanced factors and derives nondegeneracy from feasibility.
 
