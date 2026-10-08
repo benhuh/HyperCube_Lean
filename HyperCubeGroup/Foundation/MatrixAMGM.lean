@@ -2,7 +2,8 @@
   HyperCubeGroup.Foundation.MatrixAMGM
 
   The Matrix AM-GM inequality,
-  for arbitrary complex trace, with rigidity specialised to `tr(XYZ) = 1`.
+  for arbitrary complex trace, with arbitrary complex amplitude rigidity
+  and the unit-trace specialization `tr(XYZ) = 1`.
   This is the irreducible
   "textbook input" from which the unconditional lower bound
   `ℋ(Θ) ≥ 3n²` and its equality rigidity follow on any quasigroup.
@@ -10,6 +11,10 @@
   Status:
 
     * `matrix_amgm_general`        — arbitrary-amplitude bound, including zero trace.
+    * `matrix_amgm_amplitude_witness` — nonnegative amplitude witness with
+      common Gram scale and exact operator product rigidity at positive amplitude.
+    * `matrix_amgm_general_equality_iff` — equality classification at arbitrary
+      complex trace, with separate zero and nonzero branches.
     * `matrix_amgm_at_one`         — proved (Tier 2A complete) via
         Schur triangulation of the 3n×3n block-cyclic matrix.
     * `matrix_amgm_at_one_equality` — proved via the equality case
@@ -37,6 +42,7 @@
 
 import HyperCubeGroup.Foundation.BlockCyclic
 import HyperCubeGroup.Foundation.Plancherel
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 open Matrix BigOperators Finset Complex
 
@@ -311,6 +317,288 @@ theorem matrix_amgm_at_one_equality
   have hXYZ_unit := (blockCyclicFin_mul_conjTranspose_eq_one_iff X Y Z).mp hM_unit
   have hXYZ_one := (blockCyclicFin_cb_eq_one_iff X Y Z).mp hM3_id
   exact ⟨hXYZ_unit.1, hXYZ_unit.2.1, hXYZ_unit.2.2, hXYZ_one.1⟩
+
+/-! ## Arbitrary complex prediction amplitude -/
+
+omit [NeZero n] in
+private theorem gram_eq_norm_sq_of_inv_smul_unitary
+    (z : ℂ) (hz : z ≠ 0) (M : Matrix (Fin n) (Fin n) ℂ)
+    (hM : (z⁻¹ • M) * (z⁻¹ • M).conjTranspose = 1) :
+    M * M.conjTranspose =
+      ((‖z‖ ^ 2 : ℝ) : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ) := by
+  simp only [Matrix.conjTranspose_smul, Matrix.smul_mul, Matrix.mul_smul,
+    smul_smul] at hM
+  change ((starRingEnd ℂ) z⁻¹ * z⁻¹) • (M * M.conjTranspose) = 1 at hM
+  have hcoef : starRingEnd ℂ z⁻¹ * z⁻¹ =
+      (((‖z‖ ^ 2 : ℝ) : ℂ))⁻¹ := by
+    rw [map_inv₀, ← mul_inv, ← Complex.normSq_eq_conj_mul_self,
+      Complex.normSq_eq_norm_sq]
+  rw [hcoef] at hM
+  have hnormR : ‖z‖ ^ 2 ≠ 0 := pow_ne_zero 2 (norm_ne_zero_iff.mpr hz)
+  have hnorm : (((‖z‖ ^ 2 : ℝ) : ℂ)) ≠ 0 := ofReal_ne_zero.mpr hnormR
+  calc
+    M * M.conjTranspose =
+        ((‖z‖ ^ 2 : ℝ) : ℂ) •
+          ((((‖z‖ ^ 2 : ℝ) : ℂ))⁻¹ • (M * M.conjTranspose)) := by
+            rw [smul_inv_smul₀ hnorm]
+    _ = ((‖z‖ ^ 2 : ℝ) : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ) := by rw [hM]
+
+private theorem frobNormSq_inv_cube_root_pair_re
+    (z : ℂ) (M : Matrix (Fin n) (Fin n) ℂ) :
+    (frobNormSq ((z⁻¹ * z⁻¹) • M)).re =
+      ‖z‖⁻¹ ^ 4 * (frobNormSq M).re := by
+  rw [frobNormSq_smul]
+  have hc : (z⁻¹ * z⁻¹) * starRingEnd ℂ (z⁻¹ * z⁻¹) =
+      (((‖z‖⁻¹ ^ 4 : ℝ) : ℂ)) := by
+    rw [mul_comm, ← Complex.normSq_eq_conj_mul_self]
+    rw [Complex.normSq_mul, Complex.normSq_inv,
+      Complex.normSq_eq_norm_sq]
+    norm_num
+    ring
+  rw [hc, Complex.mul_re]
+  simp only [Complex.ofReal_re, Complex.ofReal_im, zero_mul, sub_zero]
+
+/-- Every complex normalized trace has a nonnegative amplitude `x`. The cyclic
+    sensitivity is at least `3x⁴`, and equality at positive amplitude forces
+    all three factors to share Gram scale `x² I` and to satisfy the exact operator product. -/
+theorem matrix_amgm_amplitude_witness
+    (X Y Z : Matrix (Fin n) (Fin n) ℂ) :
+    ∃ x : ℝ,
+      0 ≤ x ∧
+      ‖(1 / (n : ℂ)) * (X * Y * Z).trace‖ = x ^ 3 ∧
+      (frobNormSq (X * Y)).re +
+        (frobNormSq (Y * Z)).re +
+        (frobNormSq (Z * X)).re ≥ 3 * x ^ 4 ∧
+      (0 < x →
+        (frobNormSq (X * Y)).re +
+          (frobNormSq (Y * Z)).re +
+          (frobNormSq (Z * X)).re = 3 * x ^ 4 →
+        X * X.conjTranspose =
+          ((x ^ 2 : ℝ) : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ) ∧
+        Y * Y.conjTranspose =
+          ((x ^ 2 : ℝ) : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ) ∧
+        Z * Z.conjTranspose =
+          ((x ^ 2 : ℝ) : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ) ∧
+        X * Y * Z = ((1 / (n : ℂ)) * (X * Y * Z).trace) • (1 : Matrix (Fin n) (Fin n) ℂ)) := by
+  let t : ℂ := (1 / (n : ℂ)) * (X * Y * Z).trace
+  obtain ⟨z, hzpow⟩ := IsAlgClosed.exists_pow_nat_eq t (show 0 < 3 by norm_num)
+  by_cases ht : t = 0
+  · refine ⟨0, le_rfl, ?_, ?_, ?_⟩
+    · change ‖t‖ = (0 : ℝ) ^ 3
+      rw [ht, norm_zero]
+      norm_num
+    · norm_num
+      exact add_nonneg
+        (add_nonneg (frobNormSq_nonneg _) (frobNormSq_nonneg _))
+        (frobNormSq_nonneg _)
+    · norm_num
+  · have hz : z ≠ 0 := by
+      intro hz0
+      rw [hz0, zero_pow (show 3 ≠ 0 by norm_num)] at hzpow
+      exact ht hzpow.symm
+    let x : ℝ := ‖z‖
+    have hx : 0 < x := norm_pos_iff.mpr hz
+    refine ⟨x, hx.le, ?_, ?_, ?_⟩
+    · dsimp only [x]
+      change ‖t‖ = ‖z‖ ^ 3
+      rw [← hzpow, norm_pow]
+    · let X' := z⁻¹ • X
+      let Y' := z⁻¹ • Y
+      let Z' := z⁻¹ • Z
+      have htrace : (1 / (n : ℂ)) * (X' * Y' * Z').trace = 1 := by
+        dsimp only [X', Y', Z']
+        simp only [Matrix.smul_mul, Matrix.mul_smul, smul_smul,
+          Matrix.trace_smul, smul_eq_mul]
+        calc
+          1 / (n : ℂ) * (z⁻¹ * (z⁻¹ * z⁻¹) * (X * Y * Z).trace) =
+              (z⁻¹ ^ 3) * t := by simp only [t]; ring
+          _ = z⁻¹ ^ 3 * z ^ 3 := by rw [hzpow]
+          _ = 1 := by rw [← mul_pow, inv_mul_cancel₀ hz, one_pow]
+      have hscaled := matrix_amgm_at_one X' Y' Z' htrace
+      dsimp only [X', Y', Z'] at hscaled
+      simp only [Matrix.smul_mul, Matrix.mul_smul, smul_smul] at hscaled
+      rw [frobNormSq_inv_cube_root_pair_re,
+        frobNormSq_inv_cube_root_pair_re,
+        frobNormSq_inv_cube_root_pair_re] at hscaled
+      dsimp only [x]
+      field_simp at hscaled
+      nlinarith
+    · intro _ heq
+      let X' := z⁻¹ • X
+      let Y' := z⁻¹ • Y
+      let Z' := z⁻¹ • Z
+      have htrace : (1 / (n : ℂ)) * (X' * Y' * Z').trace = 1 := by
+        dsimp only [X', Y', Z']
+        simp only [Matrix.smul_mul, Matrix.mul_smul, smul_smul,
+          Matrix.trace_smul, smul_eq_mul]
+        calc
+          1 / (n : ℂ) * (z⁻¹ * (z⁻¹ * z⁻¹) * (X * Y * Z).trace) =
+              (z⁻¹ ^ 3) * t := by simp only [t]; ring
+          _ = z⁻¹ ^ 3 * z ^ 3 := by rw [hzpow]
+          _ = 1 := by rw [← mul_pow, inv_mul_cancel₀ hz, one_pow]
+      have hscaledEq :
+          (frobNormSq (X' * Y')).re +
+            (frobNormSq (Y' * Z')).re +
+            (frobNormSq (Z' * X')).re = 3 := by
+        dsimp only [X', Y', Z']
+        simp only [Matrix.smul_mul, Matrix.mul_smul, smul_smul]
+        rw [frobNormSq_inv_cube_root_pair_re,
+          frobNormSq_inv_cube_root_pair_re,
+          frobNormSq_inv_cube_root_pair_re]
+        dsimp only [x] at heq
+        field_simp
+        nlinarith
+      obtain ⟨hX', hY', hZ', hXYZ'⟩ :=
+        matrix_amgm_at_one_equality X' Y' Z' htrace hscaledEq
+      have hcoef : (z ^ 3) * (z⁻¹ * (z⁻¹ * z⁻¹)) = 1 := by
+        calc
+          (z ^ 3) * (z⁻¹ * (z⁻¹ * z⁻¹)) = (z * z⁻¹) ^ 3 := by ring
+          _ = 1 ^ 3 := by rw [mul_inv_cancel₀ hz]
+          _ = 1 := by ring
+      have hXYZ_prod : X * Y * Z = t • (1 : Matrix (Fin n) (Fin n) ℂ) := by
+        calc
+          X * Y * Z = (1 : ℂ) • (X * Y * Z) := by rw [one_smul]
+          _ = ((z ^ 3) * (z⁻¹ * (z⁻¹ * z⁻¹))) • (X * Y * Z) := by rw [hcoef]
+          _ = (z ^ 3) • ((z⁻¹ * (z⁻¹ * z⁻¹)) • (X * Y * Z)) := by rw [← smul_smul]
+          _ = (z ^ 3) • (1 : Matrix (Fin n) (Fin n) ℂ) := by
+            have hsmul_assoc : ((z⁻¹ * (z⁻¹ * z⁻¹)) • (X * Y * Z)) =
+                (z⁻¹ • X) * (z⁻¹ • Y) * (z⁻¹ • Z) := by
+              simp only [Matrix.smul_mul, Matrix.mul_smul, smul_smul]
+            rw [hsmul_assoc, hXYZ']
+          _ = t • (1 : Matrix (Fin n) (Fin n) ℂ) := by rw [hzpow]
+      dsimp only [x]
+      exact ⟨gram_eq_norm_sq_of_inv_smul_unitary z hz X hX',
+        gram_eq_norm_sq_of_inv_smul_unitary z hz Y hY',
+        gram_eq_norm_sq_of_inv_smul_unitary z hz Z hZ',
+        hXYZ_prod⟩
+
+/-! ## Arbitrary complex trace equality -/
+
+private theorem amplitude_rpow_eq (x : ℝ) (hx : 0 ≤ x) :
+    (x ^ 3) ^ (4 / 3 : ℝ) = x ^ 4 ∧
+    (x ^ 3) ^ (2 / 3 : ℝ) = x ^ 2 := by
+  constructor
+  · rw [← Real.rpow_natCast x 3, ← Real.rpow_mul hx]
+    norm_num
+  · rw [← Real.rpow_natCast x 3, ← Real.rpow_mul hx]
+    norm_num
+
+private theorem frobNormSq_eq_of_scaled_gram
+    (M : Matrix (Fin n) (Fin n) ℂ) (κ : ℂ)
+    (hM : M * M.conjTranspose = κ • (1 : Matrix (Fin n) (Fin n) ℂ)) :
+    frobNormSq M = κ := by
+  unfold frobNormSq frobInner
+  rw [Matrix.trace_mul_comm, hM]
+  have hn : (n : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne n)
+  simp only [Matrix.trace_smul, Matrix.trace_one, Fintype.card_fin]
+  field_simp
+  change κ * (n : ℂ) = (n : ℂ) * κ
+  ring
+
+omit [NeZero n] in
+private theorem mul_scaled_gram
+    (X Y : Matrix (Fin n) (Fin n) ℂ) (κ : ℂ)
+    (hX : X * X.conjTranspose = κ • (1 : Matrix (Fin n) (Fin n) ℂ))
+    (hY : Y * Y.conjTranspose = κ • (1 : Matrix (Fin n) (Fin n) ℂ)) :
+    (X * Y) * (X * Y).conjTranspose =
+      (κ * κ) • (1 : Matrix (Fin n) (Fin n) ℂ) := by
+  rw [Matrix.conjTranspose_mul]
+  simp only [Matrix.mul_assoc]
+  rw [← Matrix.mul_assoc Y Y.conjTranspose X.conjTranspose, hY]
+  simp [hX, smul_smul]
+
+/-- The cyclic normalized Frobenius sum vanishes exactly when all three
+    pairwise products vanish. This is the zero-trace equality branch. -/
+theorem matrix_amgm_zero_equality_iff
+    (X Y Z : Matrix (Fin n) (Fin n) ℂ) :
+    (frobNormSq (X * Y)).re + (frobNormSq (Y * Z)).re +
+        (frobNormSq (Z * X)).re = 0 ↔
+      X * Y = 0 ∧ Y * Z = 0 ∧ Z * X = 0 := by
+  constructor
+  · intro heq
+    have hXY := frobNormSq_nonneg (X * Y)
+    have hYZ := frobNormSq_nonneg (Y * Z)
+    have hZX := frobNormSq_nonneg (Z * X)
+    have hzero : ∀ M : Matrix (Fin n) (Fin n) ℂ,
+        (frobNormSq M).re = 0 → M = 0 := by
+      intro M hM
+      apply (frobNormSq_eq_zero_iff M).mp
+      exact Complex.ext hM (frobNormSq_real M)
+    exact ⟨hzero _ (by linarith), hzero _ (by linarith), hzero _ (by linarith)⟩
+  · rintro ⟨hXY, hYZ, hZX⟩
+    simp [hXY, hYZ, hZX, frobNormSq_zero]
+
+private theorem cyclic_frobNormSq_eq_of_common_scaled_gram
+    (X Y Z : Matrix (Fin n) (Fin n) ℂ) (κ : ℝ)
+    (hX : X * X.conjTranspose = (κ : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ))
+    (hY : Y * Y.conjTranspose = (κ : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ))
+    (hZ : Z * Z.conjTranspose = (κ : ℂ) • (1 : Matrix (Fin n) (Fin n) ℂ)) :
+    (frobNormSq (X * Y)).re + (frobNormSq (Y * Z)).re +
+      (frobNormSq (Z * X)).re = 3 * κ ^ 2 := by
+  rw [frobNormSq_eq_of_scaled_gram _ _ (mul_scaled_gram X Y _ hX hY),
+    frobNormSq_eq_of_scaled_gram _ _ (mul_scaled_gram Y Z _ hY hZ),
+    frobNormSq_eq_of_scaled_gram _ _ (mul_scaled_gram Z X _ hZ hX)]
+  simp only [← Complex.ofReal_mul, Complex.ofReal_re]
+  ring
+
+/-- At nonzero normalized trace `t`, AM-GM equality forces common Gram scale
+    `‖t‖^(2/3)` and the exact operator product `XYZ = t I`. -/
+theorem matrix_amgm_nonzero_equality
+    (X Y Z : Matrix (Fin n) (Fin n) ℂ)
+    (ht : (1 / (n : ℂ)) * (X * Y * Z).trace ≠ 0)
+    (heq : (frobNormSq (X * Y)).re + (frobNormSq (Y * Z)).re +
+      (frobNormSq (Z * X)).re =
+        3 * ‖(1 / (n : ℂ)) * (X * Y * Z).trace‖ ^ (4 / 3 : ℝ)) :
+    let t := (1 / (n : ℂ)) * (X * Y * Z).trace
+    X * X.conjTranspose = ((‖t‖ ^ (2 / 3 : ℝ) : ℝ) : ℂ) • 1 ∧
+    Y * Y.conjTranspose = ((‖t‖ ^ (2 / 3 : ℝ) : ℝ) : ℂ) • 1 ∧
+    Z * Z.conjTranspose = ((‖t‖ ^ (2 / 3 : ℝ) : ℝ) : ℂ) • 1 ∧
+    X * Y * Z = t • 1 := by
+  dsimp only
+  obtain ⟨x, hx, hnorm, _, hrigid⟩ := matrix_amgm_amplitude_witness X Y Z
+  have hxpos : 0 < x := by
+    by_contra hnot
+    have hxzero : x = 0 := le_antisymm (le_of_not_gt hnot) hx
+    have htzero : ‖(1 / (n : ℂ)) * (X * Y * Z).trace‖ = 0 := by
+      simpa [hxzero] using hnorm
+    exact ht (norm_eq_zero.mp htzero)
+  obtain ⟨hfour, htwo⟩ := amplitude_rpow_eq x hx
+  rw [hnorm, hfour] at heq
+  obtain ⟨hX, hY, hZ, hXYZ⟩ := hrigid hxpos heq
+  simpa only [hnorm, htwo] using And.intro hX (And.intro hY (And.intro hZ hXYZ))
+
+/-- Equality in Matrix AM-GM at arbitrary complex normalized trace `t`.
+    At zero trace all pairwise products vanish; at nonzero trace the factors
+    share Gram scale `‖t‖^(2/3)` and their product is exactly `t I`. -/
+theorem matrix_amgm_general_equality_iff
+    (X Y Z : Matrix (Fin n) (Fin n) ℂ) :
+    let t := (1 / (n : ℂ)) * (X * Y * Z).trace
+    (frobNormSq (X * Y)).re + (frobNormSq (Y * Z)).re +
+        (frobNormSq (Z * X)).re = 3 * ‖t‖ ^ (4 / 3 : ℝ) ↔
+      (t = 0 ∧ X * Y = 0 ∧ Y * Z = 0 ∧ Z * X = 0) ∨
+      (t ≠ 0 ∧
+        X * X.conjTranspose = ((‖t‖ ^ (2 / 3 : ℝ) : ℝ) : ℂ) • 1 ∧
+        Y * Y.conjTranspose = ((‖t‖ ^ (2 / 3 : ℝ) : ℝ) : ℂ) • 1 ∧
+        Z * Z.conjTranspose = ((‖t‖ ^ (2 / 3 : ℝ) : ℝ) : ℂ) • 1 ∧
+        X * Y * Z = t • 1) := by
+  dsimp only
+  let t := (1 / (n : ℂ)) * (X * Y * Z).trace
+  constructor
+  · intro heq
+    by_cases ht : t = 0
+    · left
+      refine ⟨ht, (matrix_amgm_zero_equality_iff X Y Z).mp ?_⟩
+      simpa only [show (1 / (n : ℂ)) * (X * Y * Z).trace = 0 from ht,
+        norm_zero, Real.zero_rpow (by norm_num : (4 / 3 : ℝ) ≠ 0), mul_zero]
+        using heq
+    · exact Or.inr ⟨ht, matrix_amgm_nonzero_equality X Y Z ht heq⟩
+  · rintro (⟨ht, hXY, hYZ, hZX⟩ | ⟨_, hX, hY, hZ, _⟩)
+    · rw [(matrix_amgm_zero_equality_iff X Y Z).mpr ⟨hXY, hYZ, hZX⟩, ht]
+      norm_num
+    · have hsum := cyclic_frobNormSq_eq_of_common_scaled_gram X Y Z
+        (‖t‖ ^ (2 / 3 : ℝ)) hX hY hZ
+      rw [hsum, ← Real.rpow_mul_natCast (norm_nonneg t)]
+      rw [show (2 / 3 : ℝ) * (2 : ℕ) = 4 / 3 by norm_num]
 
 /-! ## Manuscript Matrix AM-GM -/
 

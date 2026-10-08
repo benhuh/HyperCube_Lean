@@ -26,4 +26,5 @@ import HyperCubeGroup.Foundation.ActiveSubspaceGeneric
 import HyperCubeGroup.Foundation.ActiveSubspace
 import HyperCubeGroup.Foundation.ActiveSubspaceConstruction
 import HyperCubeGroup.Foundation.Tikhonov
+import HyperCubeGroup.Foundation.PositiveGap
 import HyperCubeGroup.Foundation.Coercivity
