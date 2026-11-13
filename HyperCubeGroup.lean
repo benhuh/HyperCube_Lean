@@ -26,5 +26,13 @@ import HyperCubeGroup.Foundation.ActiveSubspaceGeneric
 import HyperCubeGroup.Foundation.ActiveSubspace
 import HyperCubeGroup.Foundation.ActiveSubspaceConstruction
 import HyperCubeGroup.Foundation.Tikhonov
-import HyperCubeGroup.Foundation.PositiveGap
 import HyperCubeGroup.Foundation.Coercivity
+import HyperCubeGroup.Foundation.PositiveGap
+import HyperCubeGroup.Foundation.FloorDichotomy
+import HyperCubeGroup.Foundation.ReducedTable
+
+import HyperCubeGroup.Foundation.Representation.Characters
+import HyperCubeGroup.Foundation.Representation.UnitaryIntertwiner
+import HyperCubeGroup.Foundation.Representation.UnitaryMatrix
+
+import HyperCubeGroup.Foundation.External.CharacterRigidity

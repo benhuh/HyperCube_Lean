@@ -3,13 +3,23 @@ import HyperCubeGroup.Foundation.InverseRank
 import HyperCubeGroup.Foundation.GeneralCollinearity
 import HyperCubeGroup.Foundation.Coercivity
 import HyperCubeGroup.Foundation.Tikhonov
+import HyperCubeGroup.Foundation.PositiveGap
+import HyperCubeGroup.Foundation.FloorDichotomy
+import HyperCubeGroup.Foundation.ReducedTable
+import HyperCubeGroup.Foundation.UniformGap
 
 open HyperCubeGroup
+
+#print axioms feasible_nonempty
 
 -- Matrix AM-GM & Equality
 #print axioms matrix_amgm
 #print axioms matrix_amgm_equality
 #print axioms matrix_amgm_general
+#print axioms matrix_amgm_amplitude_witness
+#print axioms matrix_amgm_zero_equality_iff
+#print axioms matrix_amgm_nonzero_equality
+#print axioms matrix_amgm_general_equality_iff
 #print axioms dynamic_unconstrained_bound
 #print axioms dynamicFloor_eq_of_factorizes
 
@@ -48,3 +58,32 @@ open HyperCubeGroup
 #print axioms Coercivity.exists_isOptimal_iff_group_isotope_feasibleQuotient
 #print axioms Coercivity.global_optimality_dichotomy_feasibleQuotient
 #print axioms Coercivity.feasibleQuotient_optimal_or_strict
+
+-- Unconditional positive gaps: fixed target and fixed order
+#print axioms PositiveGap.feasible_near_floor_bounded
+#print axioms PositiveGap.exists_gap
+#print axioms PositiveGap.exists_gap_fixed_order
+#print axioms PositiveGap.exists_gap_on_feasible_ball
+#print axioms PositiveGap.exists_gap_of_near_floor_bounded
+#print axioms PositiveGap.factorizes_zeroUnusedOutputs
+#print axioms PositiveGap.objective_zeroUnusedOutputs
+#print axioms PositiveGap.normalized_feasible_near_floor_bounded
+#print axioms PositiveGap.exists_gap_of_no_floor
+
+#print axioms FloorDichotomy.exists_gap_of_non_group_no_redundancy
+#print axioms FloorDichotomy.exists_gap_of_stray_row_collision
+#print axioms FloorDichotomy.exists_gap_of_stray_column_collision
+#print axioms FloorDichotomy.inputA_eq_iff_rows_eq
+#print axioms FloorDichotomy.inputB_eq_iff_columns_eq
+#print axioms FloorDichotomy.row_collision_implies_columns_eq
+#print axioms FloorDichotomy.column_collision_implies_rows_eq
+#print axioms FloorDichotomy.quasigroup_of_floor_no_redundancy
+#print axioms FloorDichotomy.floor_group_isotope_or_redundancy
+#print axioms FloorDichotomy.group_isotope_of_floor_injective_inputs
+#print axioms FloorDichotomy.row_collision_iff_columns_eq
+#print axioms FloorDichotomy.column_collision_iff_rows_eq
+#print axioms FloorDichotomy.reducedTable_row_injective
+#print axioms FloorDichotomy.reducedTable_column_injective
+#print axioms FloorDichotomy.reducedTable_surjective
+#print axioms FloorDichotomy.reducedTable_card_bounds
+#print axioms FloorDichotomy.used_output_trace_orthonormal

@@ -168,6 +168,27 @@ def Factorizes (Θ : HCParams n) (f : BinOp n) : Prop :=
 def FeasibleSet (f : BinOp n) : Set (HCParams n) :=
   {Θ | Factorizes Θ f}
 
+/-! ## Feasible matrix-unit construction -/
+
+/-- Every binary operation of positive order admits an exact factorization,
+without quasigroup or output-surjectivity assumptions. -/
+theorem feasible_nonempty (f : BinOp n) :
+    ∃ Θ : HCParams n, Factorizes Θ f := by
+  classical
+  let Θ : HCParams n :=
+    { A := fun a => Matrix.single (0 : Fin n) a (n : ℂ)
+      B := fun b i j => if f.op i b = j then 1 else 0
+      C := fun c => Matrix.single c (0 : Fin n) (1 : ℂ) }
+  refine ⟨Θ, ?_⟩
+  intro a b c
+  change (1 / (n : ℂ)) *
+    (Matrix.single (0 : Fin n) a (n : ℂ) * Θ.B b *
+      Matrix.single c (0 : Fin n) (1 : ℂ)).trace = structureTensor f a b c
+  rw [Matrix.single_mul_mul_single]
+  have hn : (n : ℂ) ≠ 0 := by exact_mod_cast NeZero.ne n
+  by_cases hab : f.op a b = c <;>
+    simp [Θ, Matrix.trace, structureTensor, hab, hn]
+
 /-! ## Nondegeneracy assumption -/
 
 /-- Every parameter slice has strictly positive norm. -/
