@@ -14,8 +14,18 @@ import HyperCubeGroup.Foundation.Basic
 import HyperCubeGroup.Foundation.Decomposition
 import HyperCubeGroup.Foundation.CollinearManifold
 import HyperCubeGroup.Foundation.InverseRank
+import HyperCubeGroup.Foundation.SupportGeometry
+import HyperCubeGroup.Foundation.SupportDecomposition
+import HyperCubeGroup.Foundation.SupportInverseRank
+import HyperCubeGroup.Foundation.SupportGramRigidity
+import HyperCubeGroup.Foundation.SupportUnitary
 import HyperCubeGroup.Foundation.GroupIsotope
 import HyperCubeGroup.Foundation.GeneralCollinearity
+import HyperCubeGroup.Foundation.FloorDichotomy
+import HyperCubeGroup.Foundation.ReducedTable
+import HyperCubeGroup.Foundation.ExactStructure
+import HyperCubeGroup.Foundation.InputQuotients
+import HyperCubeGroup.Foundation.RepresentationClassification
 import HyperCubeGroup.Foundation.Abelian
 import HyperCubeGroup.Foundation.Spectral
 import HyperCubeGroup.Foundation.BlockCyclic
@@ -26,10 +36,9 @@ import HyperCubeGroup.Foundation.ActiveSubspaceGeneric
 import HyperCubeGroup.Foundation.ActiveSubspace
 import HyperCubeGroup.Foundation.ActiveSubspaceConstruction
 import HyperCubeGroup.Foundation.Tikhonov
-import HyperCubeGroup.Foundation.Coercivity
 import HyperCubeGroup.Foundation.PositiveGap
-import HyperCubeGroup.Foundation.FloorDichotomy
-import HyperCubeGroup.Foundation.ReducedTable
+import HyperCubeGroup.Foundation.UniformGap
+import HyperCubeGroup.Foundation.Coercivity
 
 import HyperCubeGroup.Foundation.Representation.Characters
 import HyperCubeGroup.Foundation.Representation.UnitaryIntertwiner

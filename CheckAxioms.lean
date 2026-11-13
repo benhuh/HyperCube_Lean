@@ -7,8 +7,12 @@ import HyperCubeGroup.Foundation.PositiveGap
 import HyperCubeGroup.Foundation.FloorDichotomy
 import HyperCubeGroup.Foundation.ReducedTable
 import HyperCubeGroup.Foundation.UniformGap
-
-open HyperCubeGroup
+import HyperCubeGroup.Foundation.SupportGramRigidity
+import HyperCubeGroup.Foundation.SupportUnitary
+import HyperCubeGroup.Foundation.ExactStructure
+import HyperCubeGroup.Foundation.InputQuotients
+import HyperCubeGroup.Foundation.ExactStructureRegression
+import HyperCubeGroup.Foundation.RepresentationClassification
 
 #print axioms feasible_nonempty
 
@@ -27,7 +31,8 @@ open HyperCubeGroup
 #print axioms objective_ge_inverseScalePenalty
 #print axioms shared_gram_matrices
 #print axioms normalized_rank_constant
-#print axioms kappa_one_iff_unitary
+-- #print axioms kappa_one_iff_unitary
+#print axioms gramA_eq_one_of_kappa_eq_one
 #print axioms collinear_lower_bound
 #print axioms shared_gram_matrices_of_nonzero
 #print axioms normalized_rank_constant_of_nonzero
@@ -44,11 +49,14 @@ open HyperCubeGroup
 #print axioms collinear_iff_group_isotope
 #print axioms collinear_implies_group_isotope
 #print axioms collinear_to_unitary_collinear
-#print axioms synchronization
+#print axioms exists_synchronized_unitary_family
 #print axioms synchronized_homomorphism
 #print axioms synchronized_injective
-#print axioms representation_unique
+#print axioms synchronized_character_regular
 #print axioms group_isotope_admits_unitary_collinear
+#print axioms loop_unitary_synchronization
+#print axioms representation_unitary_equivalence
+#print axioms group_isotope_global_minimizer_classification
 #print axioms IsUpperTriangular.norm_trace_cubed_pow_four_le
 #print axioms matrix_schur_trace_bound_xyz
 #print axioms Tikhonov.regularized_existence
@@ -60,15 +68,22 @@ open HyperCubeGroup
 #print axioms Coercivity.feasibleQuotient_optimal_or_strict
 
 -- Unconditional positive gaps: fixed target and fixed order
+#print axioms PositiveGap.feasibleObjectiveValues_nonempty
 #print axioms PositiveGap.feasible_near_floor_bounded
 #print axioms PositiveGap.exists_gap
+#print axioms PositiveGap.infimum_gt_floor
 #print axioms PositiveGap.exists_gap_fixed_order
+#print axioms PositiveGap.exists_infimum_gap_fixed_order
+#print axioms PositiveGap.exists_gap_fixed_order_of_no_floor
+#print axioms PositiveGap.exists_infimum_gap_fixed_order_of_no_floor
+#print axioms PositiveGap.floor_or_infimum_gap_fixed_order
 #print axioms PositiveGap.exists_gap_on_feasible_ball
 #print axioms PositiveGap.exists_gap_of_near_floor_bounded
 #print axioms PositiveGap.factorizes_zeroUnusedOutputs
 #print axioms PositiveGap.objective_zeroUnusedOutputs
 #print axioms PositiveGap.normalized_feasible_near_floor_bounded
 #print axioms PositiveGap.exists_gap_of_no_floor
+#print axioms PositiveGap.exists_infimum_gap_of_no_floor
 
 #print axioms FloorDichotomy.exists_gap_of_non_group_no_redundancy
 #print axioms FloorDichotomy.exists_gap_of_stray_row_collision
@@ -87,3 +102,51 @@ open HyperCubeGroup
 #print axioms FloorDichotomy.reducedTable_surjective
 #print axioms FloorDichotomy.reducedTable_card_bounds
 #print axioms FloorDichotomy.used_output_trace_orthonormal
+
+#print axioms support_decomposition
+#print axioms support_perfectCollinearity_iff_identities
+#print axioms support_collinear_shared_gram_matrices
+#print axioms support_local_grams_posSemidef
+#print axioms support_collinear_normalized_rank_constant
+#print axioms support_collinear_rank_identification
+#print axioms support_kappa_one_iff_local_normalized_grams_identity
+#print axioms support_collinear_inverse_rank_bound
+#print axioms support_collinear_dynamic_floor_eq_iff
+#print axioms support_absolute_feasible_bound_rigidity
+#print axioms support_unitary_collinear_iff_unitary_collinear
+#print axioms support_exists_infimum_gap_of_no_unitary_collinear
+
+#print axioms FloorDichotomy.ReducedUnitaryFactorization.of_floor
+#print axioms FloorDichotomy.ReducedUnitaryFactorization.params_factorizes
+#print axioms FloorDichotomy.ReducedUnitaryFactorization.params_support_unitary
+#print axioms FloorDichotomy.ReducedUnitaryFactorization.params_floor
+#print axioms FloorDichotomy.ReducedUnitaryFactorization.rowFactor_injective
+#print axioms FloorDichotomy.ReducedUnitaryFactorization.columnFactor_injective
+#print axioms FloorDichotomy.ReducedUnitaryFactorization.outputFactor_injective
+#print axioms FloorDichotomy.floor_factorization_descends
+#print axioms FloorDichotomy.floor_iff_reduced_unitary_factorization
+#print axioms FloorDichotomy.reduced_unitary_factorization_iff_group_isotope
+#print axioms FloorDichotomy.no_reduced_unitary_factorization_iff_gap
+#print axioms FloorDichotomy.infimum_gap_of_no_reduced_unitary_factorization
+#print axioms FloorDichotomy.minimum_associative
+#print axioms FloorDichotomy.minimum_no_repeated_rows
+#print axioms FloorDichotomy.minimum_no_repeated_columns
+#print axioms FloorDichotomy.minimum_no_reduced_unitary_factorization
+#print axioms FloorDichotomy.minimum_exists_gap
+#print axioms FloorDichotomy.minimum_exists_infimum_gap
+#print axioms FloorDichotomy.row_encoding_eq_implies_identical_rows
+#print axioms FloorDichotomy.column_encoding_eq_implies_identical_columns
+#print axioms FloorDichotomy.rowClass_card_le_of_encoding_separates_rows
+#print axioms FloorDichotomy.columnClass_card_le_of_encoding_separates_columns
+#print axioms FloorDichotomy.deterministic_encoding_card_bounds
+#print axioms FloorDichotomy.row_encoding_factors_uniquely
+#print axioms FloorDichotomy.column_encoding_factors_uniquely
+#print axioms FloorDichotomy.fixed_length_binary_encoding_card_bounds
+#print axioms FloorDichotomy.ExactStructureRegression.constant_has_reduced_unitary_factorization
+#print axioms FloorDichotomy.ExactStructureRegression.constant_lift_unused_output_zero
+#print axioms FloorDichotomy.ExactStructureRegression.minimum_two_has_infimum_gap
+#print axioms FloorDichotomy.ExactStructureRegression.minimum_fixed_order_infimum_gap
+#print axioms FloorDichotomy.ExactStructureRegression.order_one_floor_or_gap
+#print axioms FloorDichotomy.ExactStructureRegression.redundantMinimum_no_reduced_unitary_factorization
+#print axioms FloorDichotomy.ExactStructureRegression.redundancy_does_not_suffice
+#print axioms FloorDichotomy.ExactStructureRegression.canonical_quotient_encoding_bounds

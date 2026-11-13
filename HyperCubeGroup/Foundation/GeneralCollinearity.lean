@@ -161,7 +161,8 @@ theorem general_collinear_implies_group_isotope (f : BinOp n)
     collinear_isotope_transfer Θ f loop hq hiso hcol hfeas
   have hassoc := loop_collinear_associative transformed loop hloop hcolTransformed hfact
   obtain ⟨firstPerm, secondPerm, outputPerm, hiso⟩ := hiso
-  refine ⟨loop, hassoc, firstPerm.symm, secondPerm.symm, outputPerm.symm, ?_⟩
+  refine ⟨loop, hloop.toIsQuasigroup, hassoc,
+    firstPerm.symm, secondPerm.symm, outputPerm.symm, ?_⟩
   intro first second
   apply outputPerm.injective
   simpa only [Equiv.symm_symm, Equiv.apply_symm_apply, Equiv.symm_apply_apply] using

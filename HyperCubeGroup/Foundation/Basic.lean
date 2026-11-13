@@ -197,6 +197,23 @@ structure Nondegenerate (Θ : HCParams n) : Prop where
   B_pos : ∀ b : Fin n, frobNormSq (Θ.B b) ≠ 0
   C_pos : ∀ c : Fin n, frobNormSq (Θ.C c) ≠ 0
 
+/-- Nonzero norms for the input slices and the output slices used by the operation. -/
+structure SupportNondegenerate (Θ : HCParams n) (f : BinOp n) : Prop where
+  A_pos : ∀ a : Fin n, frobNormSq (Θ.A a) ≠ 0
+  B_pos : ∀ b : Fin n, frobNormSq (Θ.B b) ≠ 0
+  C_pos : ∀ a b : Fin n, frobNormSq (Θ.C (f.op a b)) ≠ 0
+
+theorem Nondegenerate.toSupport {Θ : HCParams n} (hnd : Nondegenerate Θ)
+    (f : BinOp n) : SupportNondegenerate Θ f :=
+  ⟨hnd.A_pos, hnd.B_pos, fun a b => hnd.C_pos (f.op a b)⟩
+
+theorem SupportNondegenerate.of_quasigroup {Θ : HCParams n} {f : BinOp n}
+    (hnd : SupportNondegenerate Θ f) (hq : IsQuasigroup f) : Nondegenerate Θ := by
+  refine ⟨hnd.A_pos, hnd.B_pos, ?_⟩
+  intro output
+  obtain ⟨column, hcolumn⟩ := (hq.left_cancel (0 : Fin n)).2 output
+  simpa only [hcolumn] using hnd.C_pos 0 column
+
 /-! ## Jacobian-based objective ℋ -/
 
 /-- The Jacobian-based objective (Eq. 4):

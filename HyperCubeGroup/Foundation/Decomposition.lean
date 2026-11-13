@@ -392,37 +392,49 @@ theorem frobInner_C_conjTranspose_eq_conj_hcProduct (Θ : HCParams n)
       _ = (Θ.A a * Θ.B b * Θ.C c).trace := by rw [Matrix.mul_assoc]
 
 /-- Orthogonality: ⟨A_a, Δ^(A)_abc⟩ = 0. -/
-theorem misalignmentResidualA_orthog (Θ : HCParams n) (hnd : Nondegenerate Θ)
-    (a b c : Fin n) :
+theorem misalignmentResidualA_orthog_of_norm_ne_zero (Θ : HCParams n)
+    (a b c : Fin n) (hne : frobNormSq (Θ.A a) ≠ 0) :
     frobInner (Θ.A a) (misalignmentResidualA Θ a b c) = 0 := by
   simp only [misalignmentResidualA]
   rw [frobInner_sub, frobInner_smul, frobInner_self]
   rw [frobInner_conjTranspose_eq_conj_hcProduct]
-  have hne : frobNormSq (Θ.A a) ≠ 0 := hnd.A_pos a
   field_simp
   ring
 
-/-- Orthogonality: ⟨B_b, Δ^(B)_abc⟩ = 0. -/
-theorem misalignmentResidualB_orthog (Θ : HCParams n) (hnd : Nondegenerate Θ)
+theorem misalignmentResidualA_orthog (Θ : HCParams n) (hnd : Nondegenerate Θ)
     (a b c : Fin n) :
+    frobInner (Θ.A a) (misalignmentResidualA Θ a b c) = 0 :=
+  misalignmentResidualA_orthog_of_norm_ne_zero Θ a b c (hnd.A_pos a)
+
+/-- Orthogonality: ⟨B_b, Δ^(B)_abc⟩ = 0. -/
+theorem misalignmentResidualB_orthog_of_norm_ne_zero (Θ : HCParams n)
+    (a b c : Fin n) (hne : frobNormSq (Θ.B b) ≠ 0) :
     frobInner (Θ.B b) (misalignmentResidualB Θ a b c) = 0 := by
   simp only [misalignmentResidualB]
   rw [frobInner_sub, frobInner_smul, frobInner_self]
   rw [frobInner_B_conjTranspose_eq_conj_hcProduct]
-  have hne : frobNormSq (Θ.B b) ≠ 0 := hnd.B_pos b
   field_simp
   ring
 
-/-- Orthogonality: ⟨C_c, Δ^(C)_abc⟩ = 0. -/
-theorem misalignmentResidualC_orthog (Θ : HCParams n) (hnd : Nondegenerate Θ)
+theorem misalignmentResidualB_orthog (Θ : HCParams n) (hnd : Nondegenerate Θ)
     (a b c : Fin n) :
+    frobInner (Θ.B b) (misalignmentResidualB Θ a b c) = 0 :=
+  misalignmentResidualB_orthog_of_norm_ne_zero Θ a b c (hnd.B_pos b)
+
+/-- Orthogonality: ⟨C_c, Δ^(C)_abc⟩ = 0. -/
+theorem misalignmentResidualC_orthog_of_norm_ne_zero (Θ : HCParams n)
+    (a b c : Fin n) (hne : frobNormSq (Θ.C c) ≠ 0) :
     frobInner (Θ.C c) (misalignmentResidualC Θ a b c) = 0 := by
   simp only [misalignmentResidualC]
   rw [frobInner_sub, frobInner_smul, frobInner_self]
   rw [frobInner_C_conjTranspose_eq_conj_hcProduct]
-  have hne : frobNormSq (Θ.C c) ≠ 0 := hnd.C_pos c
   field_simp
   ring
+
+theorem misalignmentResidualC_orthog (Θ : HCParams n) (hnd : Nondegenerate Θ)
+    (a b c : Fin n) :
+    frobInner (Θ.C c) (misalignmentResidualC Θ a b c) = 0 :=
+  misalignmentResidualC_orthog_of_norm_ne_zero Θ a b c (hnd.C_pos c)
 
 /-- The misalignment penalty ℛ_δ(Θ) (Definition 4, Eq. 6):
     R = Σ δ_abc (‖Δ^(A)‖² + ‖Δ^(B)‖² + ‖Δ^(C)‖²). -/
@@ -468,8 +480,8 @@ theorem misalignmentPenalty_nonneg (Θ : HCParams n) (f : BinOp n) :
     Aggregating over the three Jacobian terms gives H = B + R. -/
 
 /-- Pythagoras for factor A: ‖BC‖² = |T|²/‖A‖² + ‖Δ^A‖². -/
-private theorem pythagoras_A (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ)
-    (a b : Fin n) :
+private theorem pythagoras_A (Θ : HCParams n) (f : BinOp n)
+  (a b : Fin n) (hnorm : frobNormSq (Θ.A a) ≠ 0) :
     frobNormSq (Θ.B b * Θ.C (f.op a b)) =
       hcProduct Θ a b (f.op a b) * starRingEnd ℂ (hcProduct Θ a b (f.op a b)) /
         frobNormSq (Θ.A a) +
@@ -489,21 +501,22 @@ private theorem pythagoras_A (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerat
   rw [decomp]
   have orthog : frobInner proj ΔA = 0 := by
     show frobInner ((starRingEnd ℂ t / nA) • Θ.A a) ΔA = 0
-    rw [frobInner_smul_left, misalignmentResidualA_orthog Θ hnd a b c, mul_zero]
+    rw [frobInner_smul_left,
+      misalignmentResidualA_orthog_of_norm_ne_zero Θ a b c hnorm, mul_zero]
   rw [frobNormSq_add_of_orthog proj ΔA orthog]
   -- Step 4: compute frobNormSq(proj) = t * star t / nA
   congr 1
   show frobNormSq ((starRingEnd ℂ t / nA) • Θ.A a) = t * starRingEnd ℂ t / nA
   rw [frobNormSq_smul]
-  have hne : nA ≠ 0 := hnd.A_pos a
+  have hne : nA ≠ 0 := hnorm
   have hstar_nA : star nA = nA := star_frobNormSq (Θ.A a)
   simp only [starRingEnd_apply, star_div₀, star_star, hstar_nA]
   field_simp
   ring
 
 /-- Pythagoras for factor B: ‖CA‖² = |T|²/‖B‖² + ‖Δ^B‖². -/
-private theorem pythagoras_B (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ)
-    (a b : Fin n) :
+private theorem pythagoras_B (Θ : HCParams n) (f : BinOp n)
+  (a b : Fin n) (hnorm : frobNormSq (Θ.B b) ≠ 0) :
     frobNormSq (Θ.C (f.op a b) * Θ.A a) =
       hcProduct Θ a b (f.op a b) * starRingEnd ℂ (hcProduct Θ a b (f.op a b)) /
         frobNormSq (Θ.B b) +
@@ -519,20 +532,21 @@ private theorem pythagoras_B (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerat
   rw [← frobNormSq_conjTranspose (Θ.C c * Θ.A a), decomp]
   have orthog : frobInner proj ΔB = 0 := by
     show frobInner ((starRingEnd ℂ t / nB) • Θ.B b) ΔB = 0
-    rw [frobInner_smul_left, misalignmentResidualB_orthog Θ hnd a b c, mul_zero]
+    rw [frobInner_smul_left,
+      misalignmentResidualB_orthog_of_norm_ne_zero Θ a b c hnorm, mul_zero]
   rw [frobNormSq_add_of_orthog proj ΔB orthog]
   congr 1
   show frobNormSq ((starRingEnd ℂ t / nB) • Θ.B b) = t * starRingEnd ℂ t / nB
   rw [frobNormSq_smul]
-  have hne : nB ≠ 0 := hnd.B_pos b
+  have hne : nB ≠ 0 := hnorm
   have hstar_nB : star nB = nB := star_frobNormSq (Θ.B b)
   simp only [starRingEnd_apply, star_div₀, star_star, hstar_nB]
   field_simp
   ring
 
 /-- Pythagoras for factor C: ‖AB‖² = |T|²/‖C‖² + ‖Δ^C‖². -/
-private theorem pythagoras_C (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ)
-    (a b : Fin n) :
+private theorem pythagoras_C (Θ : HCParams n) (f : BinOp n)
+  (a b : Fin n) (hnorm : frobNormSq (Θ.C (f.op a b)) ≠ 0) :
     frobNormSq (Θ.A a * Θ.B b) =
       hcProduct Θ a b (f.op a b) * starRingEnd ℂ (hcProduct Θ a b (f.op a b)) /
         frobNormSq (Θ.C (f.op a b)) +
@@ -548,18 +562,20 @@ private theorem pythagoras_C (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerat
   rw [← frobNormSq_conjTranspose (Θ.A a * Θ.B b), decomp]
   have orthog : frobInner proj ΔC = 0 := by
     show frobInner ((starRingEnd ℂ t / nC) • Θ.C c) ΔC = 0
-    rw [frobInner_smul_left, misalignmentResidualC_orthog Θ hnd a b c, mul_zero]
+    rw [frobInner_smul_left,
+      misalignmentResidualC_orthog_of_norm_ne_zero Θ a b c hnorm, mul_zero]
   rw [frobNormSq_add_of_orthog proj ΔC orthog]
   congr 1
   show frobNormSq ((starRingEnd ℂ t / nC) • Θ.C c) = t * starRingEnd ℂ t / nC
   rw [frobNormSq_smul]
-  have hne : nC ≠ 0 := hnd.C_pos c
+  have hne : nC ≠ 0 := hnorm
   have hstar_nC : star nC = nC := star_frobNormSq (Θ.C c)
   simp only [starRingEnd_apply, star_div₀, star_star, hstar_nC]
   field_simp
   ring
 
-theorem decomposition (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ) :
+theorem decomposition_of_support_nondegenerate (Θ : HCParams n) (f : BinOp n)
+  (hnd : SupportNondegenerate Θ f) :
     objective Θ f = inverseScalePenalty Θ f + misalignmentPenalty Θ f := by
   -- Reduce objective to sum over support
   rw [objective_eq_sum_support]
@@ -572,8 +588,13 @@ theorem decomposition (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ) :
   -- For each (a, b): use the three Pythagoras identities
   set c := f.op a b with hc
   set t := hcProduct Θ a b c with ht
-  rw [pythagoras_A Θ f hnd a b, pythagoras_B Θ f hnd a b, pythagoras_C Θ f hnd a b]
+  rw [pythagoras_A Θ f a b (hnd.A_pos a), pythagoras_B Θ f a b (hnd.B_pos b),
+    pythagoras_C Θ f a b (hnd.C_pos a b)]
   ring
+
+theorem decomposition (Θ : HCParams n) (f : BinOp n) (hnd : Nondegenerate Θ) :
+    objective Θ f = inverseScalePenalty Θ f + misalignmentPenalty Θ f :=
+  decomposition_of_support_nondegenerate Θ f (hnd.toSupport f)
 
 /-- ℋ(Θ) ≥ ℬ_δ(Θ), with equality iff R = 0 (perfect collinearity). -/
 theorem objective_ge_inverseScalePenalty (Θ : HCParams n) (f : BinOp n)
@@ -606,7 +627,7 @@ structure CollinearIdentities (Θ : HCParams n) (f : BinOp n) : Prop where
     Θ.A a * Θ.B b = (hcProduct Θ a b c / frobNormSq (Θ.C c)) • (Θ.C c).conjTranspose
 
 /-- Helper: conjTranspose of the collinear identity gives the residual equation. -/
-theorem collinearA_implies_residualA_zero (Θ : HCParams n) (hnd : Nondegenerate Θ)
+theorem collinearA_implies_residualA_zero_of_identity (Θ : HCParams n)
     (a b c : Fin n)
     (hid : Θ.B b * Θ.C c = (hcProduct Θ a b c / frobNormSq (Θ.A a)) •
       (Θ.A a).conjTranspose) :
@@ -619,8 +640,16 @@ theorem collinearA_implies_residualA_zero (Θ : HCParams n) (hnd : Nondegenerate
   -- Need: star(hcProduct / frobNormSq) = starRingEnd ℂ hcProduct / frobNormSq
   rw [star_div₀, starRingEnd_apply, star_frobNormSq]
 
+theorem collinearA_implies_residualA_zero (Θ : HCParams n) (hnd : Nondegenerate Θ)
+    (a b c : Fin n)
+    (hid : Θ.B b * Θ.C c = (hcProduct Θ a b c / frobNormSq (Θ.A a)) •
+      (Θ.A a).conjTranspose) :
+    misalignmentResidualA Θ a b c = 0 := by
+  clear hnd
+  exact collinearA_implies_residualA_zero_of_identity Θ a b c hid
+
 /-- Helper: similar for B residual. -/
-theorem collinearB_implies_residualB_zero (Θ : HCParams n) (hnd : Nondegenerate Θ)
+theorem collinearB_implies_residualB_zero_of_identity (Θ : HCParams n)
     (a b c : Fin n)
     (hid : Θ.C c * Θ.A a = (hcProduct Θ a b c / frobNormSq (Θ.B b)) •
       (Θ.B b).conjTranspose) :
@@ -631,8 +660,16 @@ theorem collinearB_implies_residualB_zero (Θ : HCParams n) (hnd : Nondegenerate
   congr 1
   rw [star_div₀, starRingEnd_apply, star_frobNormSq]
 
+theorem collinearB_implies_residualB_zero (Θ : HCParams n) (hnd : Nondegenerate Θ)
+    (a b c : Fin n)
+    (hid : Θ.C c * Θ.A a = (hcProduct Θ a b c / frobNormSq (Θ.B b)) •
+      (Θ.B b).conjTranspose) :
+    misalignmentResidualB Θ a b c = 0 := by
+  clear hnd
+  exact collinearB_implies_residualB_zero_of_identity Θ a b c hid
+
 /-- Helper: similar for C residual. -/
-theorem collinearC_implies_residualC_zero (Θ : HCParams n) (hnd : Nondegenerate Θ)
+theorem collinearC_implies_residualC_zero_of_identity (Θ : HCParams n)
     (a b c : Fin n)
     (hid : Θ.A a * Θ.B b = (hcProduct Θ a b c / frobNormSq (Θ.C c)) •
       (Θ.C c).conjTranspose) :
@@ -642,6 +679,14 @@ theorem collinearC_implies_residualC_zero (Θ : HCParams n) (hnd : Nondegenerate
   rw [sub_eq_zero]
   congr 1
   rw [star_div₀, starRingEnd_apply, star_frobNormSq]
+
+theorem collinearC_implies_residualC_zero (Θ : HCParams n) (hnd : Nondegenerate Θ)
+    (a b c : Fin n)
+    (hid : Θ.A a * Θ.B b = (hcProduct Θ a b c / frobNormSq (Θ.C c)) •
+      (Θ.C c).conjTranspose) :
+    misalignmentResidualC Θ a b c = 0 := by
+  clear hnd
+  exact collinearC_implies_residualC_zero_of_identity Θ a b c hid
 
 /-- Helper: frobNormSq 0 = 0. -/
 theorem frobNormSq_zero : frobNormSq (0 : Matrix (Fin n) (Fin n) ℂ) = 0 := by
@@ -766,7 +811,7 @@ private theorem misalignmentPenalty_zero_implies_residuals_zero
           (frobNormSq_eq_zero_iff _).mp (Complex.ext hC_zero him_C)⟩
 
 /-- Helper: if misalign residual A is 0, the collinear identity for A holds. -/
-private theorem residualA_zero_implies_identityA (Θ : HCParams n) (hnd : Nondegenerate Θ)
+private theorem residualA_zero_implies_identityA (Θ : HCParams n)
     (a b c : Fin n) (h : misalignmentResidualA Θ a b c = 0) :
     Θ.B b * Θ.C c =
       (hcProduct Θ a b c / frobNormSq (Θ.A a)) • (Θ.A a).conjTranspose := by
@@ -785,7 +830,7 @@ private theorem residualA_zero_implies_identityA (Θ : HCParams n) (hnd : Nondeg
   rw [star_div₀, starRingEnd_apply, star_star, star_frobNormSq]
 
 /-- Helper: similar for B residual. -/
-private theorem residualB_zero_implies_identityB (Θ : HCParams n) (hnd : Nondegenerate Θ)
+private theorem residualB_zero_implies_identityB (Θ : HCParams n)
     (a b c : Fin n) (h : misalignmentResidualB Θ a b c = 0) :
     Θ.C c * Θ.A a =
       (hcProduct Θ a b c / frobNormSq (Θ.B b)) • (Θ.B b).conjTranspose := by
@@ -800,7 +845,7 @@ private theorem residualB_zero_implies_identityB (Θ : HCParams n) (hnd : Nondeg
   rw [star_div₀, starRingEnd_apply, star_star, star_frobNormSq]
 
 /-- Helper: similar for C residual. -/
-private theorem residualC_zero_implies_identityC (Θ : HCParams n) (hnd : Nondegenerate Θ)
+private theorem residualC_zero_implies_identityC (Θ : HCParams n)
     (a b c : Fin n) (h : misalignmentResidualC Θ a b c = 0) :
     Θ.A a * Θ.B b =
       (hcProduct Θ a b c / frobNormSq (Θ.C c)) • (Θ.C c).conjTranspose := by
@@ -815,16 +860,16 @@ private theorem residualC_zero_implies_identityC (Θ : HCParams n) (hnd : Nondeg
   rw [star_div₀, starRingEnd_apply, star_star, star_frobNormSq]
 
 /-- Perfect collinearity is equivalent to the collinear identities. -/
-theorem perfectCollinearity_iff_identities (Θ : HCParams n) (f : BinOp n)
-    (hnd : Nondegenerate Θ) :
+theorem perfectCollinearity_iff_identities_without_nondegeneracy
+    (Θ : HCParams n) (f : BinOp n) :
     PerfectCollinearity Θ f ↔ CollinearIdentities Θ f := by
   constructor
   · -- Forward: R = 0 → identities
     intro hR
     have key := misalignmentPenalty_zero_implies_residuals_zero Θ f hR
-    exact ⟨fun a b => residualA_zero_implies_identityA Θ hnd a b _ (key a b).1,
-           fun a b => residualB_zero_implies_identityB Θ hnd a b _ (key a b).2.1,
-           fun a b => residualC_zero_implies_identityC Θ hnd a b _ (key a b).2.2⟩
+    exact ⟨fun a b => residualA_zero_implies_identityA Θ a b _ (key a b).1,
+      fun a b => residualB_zero_implies_identityB Θ a b _ (key a b).2.1,
+      fun a b => residualC_zero_implies_identityC Θ a b _ (key a b).2.2⟩
   · -- Backward: identities → R = 0
     intro ⟨hidA, hidB, hidC⟩
     unfold PerfectCollinearity misalignmentPenalty
@@ -832,10 +877,16 @@ theorem perfectCollinearity_iff_identities (Θ : HCParams n) (f : BinOp n)
     intro a _
     apply Finset.sum_eq_zero
     intro b _
-    have hA := collinearA_implies_residualA_zero Θ hnd a b (f.op a b) (hidA a b)
-    have hB := collinearB_implies_residualB_zero Θ hnd a b (f.op a b) (hidB a b)
-    have hC := collinearC_implies_residualC_zero Θ hnd a b (f.op a b) (hidC a b)
+    have hA := collinearA_implies_residualA_zero_of_identity Θ a b (f.op a b) (hidA a b)
+    have hB := collinearB_implies_residualB_zero_of_identity Θ a b (f.op a b) (hidB a b)
+    have hC := collinearC_implies_residualC_zero_of_identity Θ a b (f.op a b) (hidC a b)
     simp only [hA, hB, hC, frobNormSq_zero, add_zero]
+
+theorem perfectCollinearity_iff_identities (Θ : HCParams n) (f : BinOp n)
+    (hnd : Nondegenerate Θ) :
+    PerfectCollinearity Θ f ↔ CollinearIdentities Θ f := by
+  clear hnd
+  exact perfectCollinearity_iff_identities_without_nondegeneracy Θ f
 
 theorem nonzero_supported_predictions_implies_nondegenerate
     (Θ : HCParams n) (f : BinOp n) (hq : IsQuasigroup f)

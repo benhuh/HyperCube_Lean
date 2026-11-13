@@ -667,6 +667,21 @@ private theorem local_no_escape {n : ℕ} [NeZero n]
   have hsum := hbound k
   exact ⟨by linarith, by linarith, by linarith⟩
 
+theorem local_no_escape_bounded {n : ℕ} [NeZero n]
+    (first second third : ℕ → Matrix (Fin n) (Fin n) ℂ)
+    (htrace : ∀ index,
+      (1 / (n : ℂ)) * (first index * second index * third index).trace = 1)
+    (hconv : Filter.Tendsto (fun index =>
+      (frobNormSq_F (first index * second index) +
+        frobNormSq_F (second index * third index) +
+        frobNormSq_F (third index * first index)) / (n : ℝ))
+      Filter.atTop (𝓝 3)) :
+    ∃ bound : ℝ, 0 ≤ bound ∧ ∀ index,
+      frobNormSq_F (first index) ≤ bound ∧
+      frobNormSq_F (second index) ≤ bound ∧
+      frobNormSq_F (third index) ≤ bound :=
+  local_no_escape first second third htrace hconv
+
 variable {n : ℕ} [NeZero n]
 
 /-! ## Supported energies and the objective excess -/
@@ -1227,5 +1242,60 @@ theorem exists_infimum_gap_fixed_order :
   apply le_csInf (feasibleObjectiveValues_nonempty f)
   rintro value ⟨Θ, hfeas, rfl⟩
   exact hgap f hq hnotgi Θ hfeas
+
+theorem exists_gap_fixed_order_of_no_floor :
+    ∃ ε : ℝ, 0 < ε ∧ ∀ f : BinOp n,
+      (∀ Θ : HCParams n, Factorizes Θ f →
+        (objective Θ f).re ≠ 3 * (n : ℝ) ^ 2) →
+      ∀ Θ : HCParams n, Factorizes Θ f →
+        3 * (n : ℝ) ^ 2 + ε ≤ (objective Θ f).re := by
+  classical
+  letI : Fintype (BinOp n) := binOpFintype n
+  let Eligible := {f : BinOp n // ∀ Θ : HCParams n, Factorizes Θ f →
+    (objective Θ f).re ≠ 3 * (n : ℝ) ^ 2}
+  by_cases heligible : Nonempty Eligible
+  · letI : Nonempty Eligible := heligible
+    choose gap hpositive hgap using
+      (fun target : Eligible => exists_gap_of_no_floor target.val target.property)
+    have hnonempty : (Finset.univ : Finset Eligible).Nonempty := Finset.univ_nonempty
+    refine ⟨Finset.univ.inf' hnonempty gap, ?_, ?_⟩
+    · rw [Finset.lt_inf'_iff]
+      exact fun target _ => hpositive target
+    · intro target hnoFloor parameters hfeas
+      have hminimum : Finset.univ.inf' hnonempty gap ≤ gap ⟨target, hnoFloor⟩ :=
+        Finset.inf'_le gap (Finset.mem_univ _)
+      have hbound := hgap ⟨target, hnoFloor⟩ parameters hfeas
+      linarith
+  · refine ⟨1, by norm_num, ?_⟩
+    intro target hnoFloor
+    exact False.elim (heligible ⟨⟨target, hnoFloor⟩⟩)
+
+theorem exists_infimum_gap_fixed_order_of_no_floor :
+    ∃ ε : ℝ, 0 < ε ∧ ∀ f : BinOp n,
+      (∀ Θ : HCParams n, Factorizes Θ f →
+        (objective Θ f).re ≠ 3 * (n : ℝ) ^ 2) →
+        3 * (n : ℝ) ^ 2 + ε ≤ sInf (feasibleObjectiveValues f) := by
+  obtain ⟨gap, hpositive, hgap⟩ := exists_gap_fixed_order_of_no_floor (n := n)
+  refine ⟨gap, hpositive, ?_⟩
+  intro target hnoFloor
+  apply le_csInf (feasibleObjectiveValues_nonempty target)
+  rintro value ⟨parameters, hfeas, rfl⟩
+  exact hgap target hnoFloor parameters hfeas
+
+theorem floor_or_infimum_gap_fixed_order :
+    ∃ ε : ℝ, 0 < ε ∧ ∀ f : BinOp n,
+      (∃ Θ : HCParams n, Factorizes Θ f ∧ (objective Θ f).re = 3 * (n : ℝ) ^ 2) ∨
+        3 * (n : ℝ) ^ 2 + ε ≤ sInf (feasibleObjectiveValues f) := by
+  classical
+  obtain ⟨gap, hpositive, hgap⟩ := exists_infimum_gap_fixed_order_of_no_floor (n := n)
+  refine ⟨gap, hpositive, ?_⟩
+  intro target
+  by_cases hfloor : ∃ parameters : HCParams n,
+      Factorizes parameters target ∧ (objective parameters target).re = 3 * (n : ℝ) ^ 2
+  · exact Or.inl hfloor
+  · apply Or.inr
+    apply hgap target
+    intro parameters hfeas hequality
+    exact hfloor ⟨parameters, hfeas, hequality⟩
 
 end PositiveGap

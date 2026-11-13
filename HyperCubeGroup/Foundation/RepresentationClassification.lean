@@ -70,7 +70,7 @@ theorem representation_unitary_equivalence (Θ : HCParams n) (f : BinOp n)
         (synchronized g : Matrix (Fin n) (Fin n) ℂ).trace := by
     intro g
     change (leftRegularRep f g).trace = (hsync.rho g).trace
-    rw [representation_unique Θ f hloop hassoc hsync hfeas g]
+    rw [synchronized_character_regular Θ f hloop hassoc hsync hfeas g]
     have htrace := leftRegularRep_trace_product f hloop.toIsQuasigroup g identity
     simpa only [regular_one, Matrix.conjTranspose_one, Matrix.mul_one] using htrace
   obtain ⟨W, hW⟩ := HyperCubeGroup.Manuscript.unitary_equivalence_of_character_eq

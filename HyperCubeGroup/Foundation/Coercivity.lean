@@ -39,7 +39,7 @@ variable {n : ℕ} [NeZero n]
 
 /-! ## Gauge action: per-slot complex scaling -/
 
-/-- The gauge action: scale each slice by a per-slot complex factor. -/
+/-- Per-slice complex scaling; feasibility preservation requires the support constraint below. -/
 noncomputable def gaugeAction (sA sB sC : Fin n → ℂ) (Θ : HCParams n) : HCParams n :=
   ⟨fun a => sA a • Θ.A a,
    fun b => sB b • Θ.B b,
@@ -451,7 +451,7 @@ theorem unitaryConjAction_mul (U₁ U₂ : Matrix (Fin n) (Fin n) ℂ) (Θ : HCP
 
 /-! ## Gauge orbit -/
 
-/-- The gauge orbit of `Θ` under the unitary conjugation action. -/
+/-- Common-conjugation orbit, not the full three-independent-unitary model orbit. -/
 def unitaryGaugeOrbit (Θ : HCParams n) : Set (HCParams n) :=
   {Ψ | ∃ U : Matrix (Fin n) (Fin n) ℂ, U * U.conjTranspose = 1 ∧ Ψ = unitaryConjAction U Θ}
 
@@ -585,6 +585,10 @@ abbrev GaugeEquiv (Θ Ψ : HCParams n) : Prop := unitaryGaugeSetoid.r Θ Ψ
 
 /-- The quotient by the gauge equivalence: a "gauge orbit space". -/
 abbrev GaugeQuotient (n : ℕ) [NeZero n] := Quotient (unitaryGaugeSetoid : Setoid (HCParams n))
+
+abbrev CommonUnitaryConjugationEquiv (Θ Ψ : HCParams n) : Prop := GaugeEquiv Θ Ψ
+
+abbrev CommonUnitaryConjugationQuotient (n : ℕ) [NeZero n] := GaugeQuotient n
 
 /-- The objective descends to the gauge quotient. -/
 theorem objective_descends_to_gaugeQuotient (f : BinOp n) :

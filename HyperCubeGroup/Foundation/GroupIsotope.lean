@@ -64,10 +64,17 @@ def IsIsotopic (f g : BinOp n) : Prop :=
   ∃ φ ψ χ : Equiv.Perm (Fin n),
     ∀ a b : Fin n, g.op a b = χ (f.op (φ.symm a) (ψ.symm b))
 
-/-- A quasigroup is a group isotope if it is isotopic to some group.
+/-- A binary operation is an associative isotope if it is isotopic to some
+    associative operation.
+-/
+def IsAssociativeIsotope (f : BinOp n) : Prop :=
+  ∃ g : BinOp n, IsAssociative g ∧ IsIsotopic g f
+
+/-- A binary operation is a group isotope if it is isotopic to some
+    associative quasigroup.
 -/
 def IsGroupIsotope (f : BinOp n) : Prop :=
-  ∃ g : BinOp n, IsAssociative g ∧ IsIsotopic g f
+  ∃ g : BinOp n, IsQuasigroup g ∧ IsAssociative g ∧ IsIsotopic g f
 
 /-- A loop is a quasigroup with a two-sided identity element.
 -/
@@ -167,7 +174,7 @@ private theorem unitary_trace_n_eq_one (M : Matrix (Fin n) (Fin n) ℂ)
 /-- Synchronization: Given UnitaryCollinear Θ f and f a loop with identity e,
     construct a synchronized Θ' by gauge-transforming via A_e†.
 -/
-theorem synchronization (Θ : HCParams n) (f : BinOp n)
+theorem exists_synchronized_unitary_family (Θ : HCParams n) (f : BinOp n)
     (hloop : IsLoop f) (huc : UnitaryCollinear Θ f) :
     ∃ (Θ' : HCParams n), Nonempty (Synchronized Θ' f) := by
   -- Construct ρ(g) = A_e† * A_g
@@ -186,6 +193,9 @@ theorem synchronization (Θ : HCParams n) (f : BinOp n)
       rw [huc.unitaryA g, Matrix.one_mul]
       exact mul_eq_one_comm.mp (huc.unitaryA _)
   }⟩⟩
+
+@[deprecated exists_synchronized_unitary_family (since := "2026-10-14")]
+alias synchronization := exists_synchronized_unitary_family
 
 /-!
 ## Lemma: Homomorphism and Injectivity -/
@@ -484,7 +494,7 @@ theorem unitary_collinear_implies_group_isotope (f : BinOp n)
   -- Step 4: f is isotopic to group g, hence a group isotope
   -- We have IsIsotopic f g, need IsIsotopic g f (reverse direction)
   obtain ⟨φ, ψ, χ, hiso_eq⟩ := hiso
-  exact ⟨g, hassoc, φ.symm, ψ.symm, χ.symm, fun a b => by
+  exact ⟨g, hloop.toIsQuasigroup, hassoc, φ.symm, ψ.symm, χ.symm, fun a b => by
     have h := hiso_eq (φ a) (ψ b)
     simp [Equiv.symm_apply_apply] at h
     -- h : χ(f.op a b) = g.op(φ a)(ψ b), need f.op a b = χ⁻¹(g.op ...)
@@ -577,6 +587,31 @@ theorem isotopy_source_quasigroup (g f : BinOp n)
       funext (fun x => key x y)
     rw [heq]
     exact (χ.symm.bijective.comp (hqf.right_cancel (ψ y))).comp φ.bijective
+
+omit [NeZero n] in
+theorem IsGroupIsotope.isQuasigroup {f : BinOp n} (hgi : IsGroupIsotope f) :
+    IsQuasigroup f := by
+  obtain ⟨g, hqg, _, φ, ψ, χ, hiso⟩ := hgi
+  constructor
+  · intro first
+    have heq : f.op first = (fun second => χ (g.op (φ.symm first) (ψ.symm second))) :=
+      funext (hiso first)
+    rw [heq]
+    exact (χ.bijective.comp (hqg.left_cancel (φ.symm first))).comp ψ.symm.bijective
+  · intro second
+    have heq : (fun first => f.op first second) =
+        (fun first => χ (g.op (φ.symm first) (ψ.symm second))) :=
+      funext (fun first => hiso first second)
+    rw [heq]
+    exact (χ.bijective.comp (hqg.right_cancel (ψ.symm second))).comp φ.symm.bijective
+
+theorem isGroupIsotope_iff_isAssociativeIsotope (f : BinOp n) (hq : IsQuasigroup f) :
+    IsGroupIsotope f ↔ IsAssociativeIsotope f := by
+  constructor
+  · rintro ⟨g, _, hassoc, hiso⟩
+    exact ⟨g, hassoc, hiso⟩
+  · rintro ⟨g, hassoc, hiso⟩
+    exact ⟨g, isotopy_source_quasigroup g f hq hiso, hassoc, hiso⟩
 
 theorem leftRegularRep_trace_product (f : BinOp n) (hq : IsQuasigroup f)
     (x y : Fin n) :
@@ -682,8 +717,7 @@ private theorem leftReg_CA_eq_conjTranspose_B (g : BinOp n) (hq : IsQuasigroup g
 theorem group_isotope_admits_unitary_collinear (f : BinOp n)
     (hq : IsQuasigroup f) (hgi : IsGroupIsotope f) :
     ∃ Θ : HCParams n, UnitaryCollinear Θ f := by
-  obtain ⟨g, hassoc, φ, ψ, χ, hiso⟩ := hgi
-  have hqg : IsQuasigroup g := isotopy_source_quasigroup g f hq ⟨φ, ψ, χ, hiso⟩
+  obtain ⟨g, hqg, hassoc, φ, ψ, χ, hiso⟩ := hgi
   -- Build Θ_g from left-regular rep of g
   let ρ := leftRegularRep g
   let Θ_g : HCParams n := ⟨ρ, ρ, fun c => (ρ c).conjTranspose⟩
@@ -771,7 +805,7 @@ theorem group_isotope_admits_unitary_collinear (f : BinOp n)
 /-!
 ## Lemma: Uniqueness of Representation -/
 
-theorem representation_unique (Θ : HCParams n) (f : BinOp n)
+theorem synchronized_character_regular (Θ : HCParams n) (f : BinOp n)
     (hloop : IsLoop f) (hassoc : IsAssociative f)
     (hsync : Synchronized Θ f) (hfeas : Factorizes Θ f) :
     ∀ g : Fin n,
@@ -802,6 +836,9 @@ theorem representation_unique (Θ : HCParams n) (f : BinOp n)
   · rw [if_neg heg]
     rw [if_neg (fun h : e = g => heg h.symm)] at hfact
     exact star_eq_zero.mp ((mul_eq_zero.mp hfact).resolve_left hn_ne)
+
+@[deprecated synchronized_character_regular (since := "2026-10-14")]
+alias representation_unique := synchronized_character_regular
 
 /-!
 ## Global minimizer definition -/

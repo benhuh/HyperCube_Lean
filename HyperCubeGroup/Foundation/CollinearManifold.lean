@@ -489,8 +489,8 @@ theorem normalized_rank_constant_of_nonzero (Θ : HCParams n) (f : BinOp n)
     simpa only [one_mul] using (le_div_iff₀ hκpos).mp hinv
   exact ⟨κ, hκpos, hκle, hconst⟩
 
-/-- κ = 1 iff Gram matrices are identity (full-rank / unitary factorization). -/
-theorem kappa_one_iff_unitary (Θ : HCParams n) (f : BinOp n)
+/-- Unit normalized rank forces identity normalized A Gram matrices. -/
+theorem gramA_eq_one_of_kappa_eq_one (Θ : HCParams n) (f : BinOp n)
     (hq : IsQuasigroup f) (hnd : Nondegenerate Θ)
     (hcol : PerfectCollinearity Θ f) (hfeas : Factorizes Θ f)
     (hκ : ∀ a b : Fin n, kappaTriple Θ a b (f.op a b) = 1) :
@@ -593,6 +593,9 @@ theorem kappa_one_iff_unitary (Θ : HCParams n) (f : BinOp n)
     rw [Matrix.trace_sub, Matrix.trace_one, Fintype.card_fin, htrX, sub_self, mul_zero]
   have h1eqX := (frobNormSq_eq_zero_iff (1 - X)).mp hfrob
   rw [sub_eq_zero] at h1eqX; exact h1eqX.symm
+
+@[deprecated gramA_eq_one_of_kappa_eq_one (since := "2026-10-14")]
+alias kappa_one_iff_unitary := gramA_eq_one_of_kappa_eq_one
 
 /-! ## Lemma: AM-GM Lower Bound -/
 
