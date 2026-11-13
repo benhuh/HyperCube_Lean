@@ -1,9 +1,9 @@
 # HyperCube Group Discovery — Lean 4 Formalization
 
-Formal verification of the HyperCube tensor factorization model for arbitrary finite binary operations, accompanying our submitted manuscript.
+Formal verification of the canonical tensor factorization model and sensitivity objective for arbitrary finite binary operations, accompanying our submitted manuscript.
 
-This repository mechanizes the support-local orthogonal decomposition, Gram geometry, normalized rank, amplitude-dependent inverse-rank bounds, Matrix AM-GM, and dynamic and feasible floor bounds for arbitrary binary operations. It also proves the unitary and general collinearity group-isotope equivalences for quasigroups.
-Foundation results for arbitrary finite binary operations establish general floor rigidity, a floor-attainment dichotomy, cancellation rigidity of reduced tables, exact reduced unitary factorization, feasible-set nonemptiness, and fixed-target and fixed-order uniform gaps for objective values and their real infimum whenever no feasible floor point exists. Theorem 8 covers all finite binary operations at each fixed positive order, not only quasigroups.
+This repository mechanizes the support-local Cauchy--Schwarz bound and orthogonal decomposition, shared balancedness (normalized Gram geometry), normalized rank, collinear output-dependent inverse-rank bounds, Matrix AM--GM, and global output-dependent and feasible-set lower bounds for arbitrary binary operations. It also proves the unitary and general collinearity group-isotope equivalences for quasigroups.
+Foundation results for arbitrary finite binary operations establish general floor rigidity, input-redundancy characterization at the floor, cancellation rigidity of reduced tables, exact reduced unitary factorization, feasible-set nonemptiness, and fixed-target and fixed-order uniform positive gaps for objective values and their real infimum whenever no feasible floor point exists. Theorem 8 covers all finite binary operations at each fixed positive order, not only quasigroups.
 The precise correspondence and remaining limitations are documented below.
 
 ## Named Axiom-Free Theorems
@@ -13,17 +13,17 @@ For each named theorem below, `#print axioms <name>` uses only standard Lean bac
 | Manuscript | Lean name | File | Formalized scope |
 | --- | --- | --- | --- |
 | Proposition 0: Exact Factorization Exists | `feasible_nonempty`, `PositiveGap.feasibleObjectiveValues_nonempty` | [Basic.lean](HyperCubeGroup/Foundation/Basic.lean), [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean) | Every finite binary operation of positive order admits full exact reconstruction, and its feasible objective set is nonempty; no quasigroup assumption |
-| Lemma 1: Cauchy--Schwarz Bound | `support_decomposition`, `decomposition`, `objective_ge_inverseScalePenalty` | [SupportDecomposition.lean](HyperCubeGroup/Foundation/SupportDecomposition.lean), [Decomposition.lean](HyperCubeGroup/Foundation/Decomposition.lean) | Objective decomposition `ℋ = ℬ_δ + ℛ_δ` and `ℋ ≥ ℬ_δ` for arbitrary operations under `SupportNondegenerate` (or global `Nondegenerate`); unused output norms are unrestricted |
-| Lemma 2: Shared Balancedness (Eq. (7)) | `support_collinear_shared_gram_matrices`, `support_local_gram_identities`, `support_local_grams_posSemidef` | [SupportInverseRank.lean](HyperCubeGroup/Foundation/SupportInverseRank.lean), [SupportGeometry.lean](HyperCubeGroup/Foundation/SupportGeometry.lean), [SupportGramRigidity.lean](HyperCubeGroup/Foundation/SupportGramRigidity.lean) | Common normalized input Gram `Z` and cyclic local Gram identities under collinearity and nonzero supported predictions, without a quasigroup premise; local positive semidefiniteness requires neither hypothesis |
+| Lemma 1: Cauchy--Schwarz Bound | `support_decomposition`, `decomposition`, `objective_ge_inverseScalePenalty` | [SupportDecomposition.lean](HyperCubeGroup/Foundation/SupportDecomposition.lean), [Decomposition.lean](HyperCubeGroup/Foundation/Decomposition.lean) | Objective decomposition `ℋ = ℬ_δ + ℛ_δ` and Cauchy--Schwarz lower bound `ℋ ≥ ℬ_δ` for arbitrary operations under `SupportNondegenerate` (or global `Nondegenerate`); unused output norms are unrestricted |
+| Lemma 2: Shared Balancedness (Eq. (7)) | `support_collinear_shared_gram_matrices`, `support_local_gram_identities`, `support_local_grams_posSemidef` | [SupportInverseRank.lean](HyperCubeGroup/Foundation/SupportInverseRank.lean), [SupportGeometry.lean](HyperCubeGroup/Foundation/SupportGeometry.lean), [SupportGramRigidity.lean](HyperCubeGroup/Foundation/SupportGramRigidity.lean) | Shared normalized input Gram `Z` and cyclic local normalized Gram identities under collinearity and nonzero supported predictions, without a quasigroup premise; local positive semidefiniteness requires neither hypothesis |
 | Lemma 3: Normalized Rank κ | `support_collinear_rank_identification`, `support_kappa_one_iff_local_normalized_grams_identity` | [SupportInverseRank.lean](HyperCubeGroup/Foundation/SupportInverseRank.lean), [SupportGramRigidity.lean](HyperCubeGroup/Foundation/SupportGramRigidity.lean) | For arbitrary operations under collinearity and nonzero supported predictions: common `0 < κ ≤ 1`, `nκ = rank Z = rank A_a = rank B_b = rank C_{f(a,b)}`, and `κ = 1` iff all normalized supported Grams (both orientations) are `I` |
-| Lemma 4: Collinear Output-Dependent Bound and Inverse-Rank Penalty | `support_collinear_inverse_rank_bound`, `support_collinear_dynamic_floor_eq_iff` | [SupportInverseRank.lean](HyperCubeGroup/Foundation/SupportInverseRank.lean) | Full amplitude-dependent inverse-rank bound for arbitrary operations under collinearity and nonzero supported predictions; support nondegeneracy follows automatically; sharp equality balances input and used-output squared norms only; dynamic-floor equality additionally requires `κ = 1` |
+| Lemma 4: Collinear Output-Dependent Bound and Inverse-Rank Penalty | `support_collinear_inverse_rank_bound`, `support_collinear_dynamic_floor_eq_iff` | [SupportInverseRank.lean](HyperCubeGroup/Foundation/SupportInverseRank.lean) | Collinear output-dependent inverse-rank bound for arbitrary operations under collinearity and nonzero supported predictions; support nondegeneracy follows automatically; sharp equality balances input and used-output squared norms only; output-dependent bound equality additionally requires `κ = 1` |
 | Lemma 5: Matrix AM--GM | `matrix_amgm_general`, `matrix_amgm_general_equality_iff`, `matrix_amgm`, `matrix_amgm_equality` | [MatrixAMGM.lean](HyperCubeGroup/Foundation/MatrixAMGM.lean) | Arbitrary complex trace and zero trace, with full equality characterization including equality rigidity at unit normalized trace |
-| Theorem 6: Global Output-Dependent Bound | `dynamic_unconstrained_bound`, `dynamicFloor_eq_of_factorizes` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Prediction-dependent floor for arbitrary parameters on any binary operation; no feasibility, nondegeneracy, or collinearity hypothesis |
-| Theorem 7: Feasible-Set Lower Bound | `absolute_feasible_bound_lower`, `support_absolute_feasible_bound_rigidity`, `universal_lower_bound_general`, `equality_rigidity_general` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean), [SupportUnitary.lean](HyperCubeGroup/Foundation/SupportUnitary.lean) | Arbitrary-operation feasible lower bound `3n²` and equality iff `SupportUnitaryCollinearFactorization` (forcing unitary inputs, unitary used outputs, and the supported product identity); `absolute_feasible_bound_rigidity` characterizes equality by global `UnitaryCollinear` for quasigroups |
+| Theorem 6: Global Output-Dependent Bound | `dynamic_unconstrained_bound`, `dynamicFloor_eq_of_factorizes` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Global output-dependent lower bound for arbitrary parameters on any binary operation; no feasibility, nondegeneracy, or collinearity hypothesis |
+| Theorem 7: Feasible-Set Lower Bound | `absolute_feasible_bound_lower`, `support_absolute_feasible_bound_rigidity`, `universal_lower_bound_general`, `equality_rigidity_general` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean), [SupportUnitary.lean](HyperCubeGroup/Foundation/SupportUnitary.lean) | Arbitrary-operation universal complexity floor `3|supp(δ)| = 3n²` and equality iff `SupportUnitaryCollinearFactorization` (forcing unitary inputs, unitary used outputs, and the supported product identity); `absolute_feasible_bound_rigidity` characterizes equality by global `UnitaryCollinear` for quasigroups |
 | Lemma 17 (App. C.3.1): Spectral No-Escape | `spectral_no_escape` (private proof helper), `PositiveGap.local_no_escape_bounded`, `PositiveGap.normalized_feasible_near_floor_bounded` | [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean) | Fixed-dimension cubic-trace and squared-matrix Frobenius limit imply boundedness of the matrix sequence; near-floor feasible boundedness holds for arbitrary positive-order operations after `zeroUnusedOutputs` normalization |
 | Theorem 8 (Sec. 4 & App. C.3.2): Positive Infimum Gap | `PositiveGap.exists_gap_of_no_floor`, `PositiveGap.exists_infimum_gap_of_no_floor`, `PositiveGap.exists_gap_fixed_order_of_no_floor`, `PositiveGap.exists_infimum_gap_fixed_order_of_no_floor`, `PositiveGap.floor_or_infimum_gap_fixed_order` | [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean) | For all finite binary operations at each fixed positive order, one positive epsilon bounds all no-floor feasible values and real infima; every operation either attains the floor or has this infimum gap |
 | Theorem 9: Unitary Collinearity ⟺ Group Isotope | `unitary_collinearity_iff_group_isotope` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Full unitary existence equivalence for quasigroups |
-| Theorem 10: Global Optimality for Quasigroups | `global_optimality_dichotomy`, `group_isotope_global_minimizer_classification`, `strict_gap_non_group`, `PositiveGap.exists_gap_fixed_order`, `PositiveGap.exists_infimum_gap_fixed_order` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean), [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean), [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean) | Quasigroup dichotomy and full group-isotope global minimizer classification up to isotopy and three unitary gauges of the left-regular representation; nongroup-isotope quasigroups have the fixed-order positive gap for feasible values and their real infimum |
+| Theorem 10: Global Optimality for Quasigroups | `global_optimality_dichotomy`, `group_isotope_global_minimizer_classification`, `strict_gap_non_group`, `PositiveGap.exists_gap_fixed_order`, `PositiveGap.exists_infimum_gap_fixed_order` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean), [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean), [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean) | Quasigroup floor-attainment characterization and full group-isotope global minimizer classification up to isotopy and three unitary gauges of the left-regular representation; nongroup-isotope quasigroups have the fixed-order positive associativity gap for feasible values and their real infimum |
 | Lemma 12 (App. B.2): Synchronization | `loop_unitary_synchronization` | [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean) | For a unitary collinear loop factorization, constructs a synchronized feasible family and reconstructs all three given factor families using unitary gauges |
 | Lemma 13 (App. B.2): Homomorphism and Injectivity | `synchronized_homomorphism`, `synchronized_injective` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Homomorphism and injectivity of a synchronized feasible loop map |
 | Lemma 14 (App. B.2): Uniqueness of Representation | `synchronized_character_regular`, `representation_unitary_equivalence` | [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean), [RepresentationClassification.lean](HyperCubeGroup/Foundation/RepresentationClassification.lean) | Regular-character trace identity and full unitary equivalence to the left-regular representation for a synchronized feasible associative loop |
@@ -36,17 +36,17 @@ For each named theorem below, `#print axioms <name>` uses only standard Lean bac
 | Theorem 21 (App. E.2): Reduced-Table Cancellation and Cardinalities | `FloorDichotomy.reducedTable_row_injective`, `FloorDichotomy.reducedTable_column_injective`, `FloorDichotomy.reducedTable_surjective`, `FloorDichotomy.reducedTable_card_bounds` | [ReducedTable.lean](HyperCubeGroup/Foundation/ReducedTable.lean) | Separate row and column quotients map onto used outputs; floor attainment gives separate injectivity and `max(r,s) ≤ t ≤ rs`; no associative quotient is asserted |
 | Theorem 22 (App. E.2): Used-Output Orthonormality | `FloorDichotomy.used_output_trace_orthonormal` | [ReducedTable.lean](HyperCubeGroup/Foundation/ReducedTable.lean) | Used output slices have orthonormal normalized trace inner products at an exactly feasible floor point |
 
-Theorem 6 proves
+Theorem 6 proves the global output-dependent lower bound
 
-$$\mathcal H(\Theta)\ge 3\sum_{a,b}|T_{ab,f(a,b)}(\Theta)|^{4/3}.$$
+$$\mathcal H(\Theta)\ge \mathcal H^*_\delta(T(\Theta)) \coloneqq 3\sum_{\operatorname{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
 
-This includes vanishing supported predictions. Under exact factorization, `dynamicFloor_eq_of_factorizes` reduces the floor to `3n²`; Theorem 7 supplies its feasible equality characterization.
+This includes vanishing supported predictions. Under exact factorization ($T(\Theta)=\delta$), `dynamicFloor_eq_of_factorizes` reduces the bound to the universal complexity floor `3|supp(δ)| = 3n²`; Theorem 7 supplies its feasible equality characterization.
 
 On the collinear set with nonzero supported predictions, Lemma 4 proves
 
-$$\mathcal H(\Theta)=\mathcal B_\delta(\Theta)\ge 3\kappa^{-1/3}\sum_{a,b}|T_{ab,f(a,b)}(\Theta)|^{4/3}.$$
+$$\mathcal H(\Theta)=\mathcal B_\delta(\Theta)\ge \kappa^{-1/3}\,\mathcal H^*_\delta(T(\Theta)) = 3\kappa^{-1/3}\sum_{\operatorname{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
 
-Equality in this sharper bound holds exactly when input and used-output squared norms are balanced: for every `a,b`, `frobNormSq (A_a) = frobNormSq (B_b) = frobNormSq (C_{f(a,b)})`. Unused output slices are unrestricted. Equality with the unpenalized dynamic floor additionally requires `κ = 1`.
+Equality in this sharper bound holds exactly when input and used-output squared norms are balanced: for every `a,b`, `frobNormSq (A_a) = frobNormSq (B_b) = frobNormSq (C_{f(a,b)})`. Unused output slices are unrestricted. Equality with the unpenalized output-dependent bound $\mathcal H^*_\delta(T(\Theta))$ additionally requires `κ = 1`.
 
 `support_nondegenerate_of_nonzero` proves that nonzero supported predictions imply `SupportNondegenerate` for any binary operation, so Lemmas 2-4 require no separate nondegeneracy premise or quasigroup assumption. Under feasibility, supported predictions equal 1. The common-positive-κ formula is stated on this nonzero-prediction domain; Theorem 6 also covers vanishing predictions.
 
@@ -58,19 +58,19 @@ The feasible landscape results hold on the combined gauge quotient `Coercivity.F
 - `case2_strict_gap_non_group_feasibleQuotient`: Theorem 10 pointwise strict bound for non-group targets.
 - `isOptimal_iff_unitaryCollinear_feasibleQuotient`: Theorem 7 equality characterization.
 - `exists_isOptimal_iff_group_isotope_feasibleQuotient`: Theorems 9 and 10 floor-attainment characterization.
-- `global_optimality_dichotomy_feasibleQuotient`, `feasibleQuotient_optimal_or_strict`: feasible dichotomy.
+- `global_optimality_dichotomy_feasibleQuotient`, `feasibleQuotient_optimal_or_strict`: feasible floor-or-strict-gap characterization.
 
 ## Overview
 
-We formalize the theory of HyperCube parameters `Θ = (A, B, C)` where the structure tensor of a finite binary operation `(Q, ∘)` of positive order `n` is approximated by:
+We formalize the theory of factorization parameters `Θ = (A, B, C)` where the structure tensor $\delta$ of a finite binary operation `(Q, ∘)` of positive order `n` is modeled (using normalized trace $\operatorname{Tr}(X) \coloneqq \frac{1}{n}\operatorname{Trace}(X)$) by:
 
-$$T_{abc} = \frac{1}{n} \operatorname{Tr}(A_a B_b C_c)$$
+$$T_{abc}(\Theta) = \operatorname{Tr}(A_a B_b C_c) = \frac{1}{n} \operatorname{Trace}(A_a B_b C_c)$$
 
-The Jacobian-based objective is:
+The sensitivity objective is:
 
-$$\mathcal{H}(\Theta) = \sum_{a,b,c} \delta_{abc}\left(\|B_b C_c\|^2 + \|C_c A_a\|^2 + \|A_a B_b\|^2\right)$$
+$$\mathcal H (\Theta) = \sum_{(a,b,c)\in\operatorname{supp}(\delta)} n \, \| \nabla_\Theta T_{abc}(\Theta)\|^2 = \sum_{\operatorname{supp}(\delta)} \big( \|B_b C_c\|^2 + \| C_c A_a \|^2 + \| A_a B_b \|^2 \big)$$
 
-The norms are normalized Frobenius norms. Every binary-operation table has `|δ| = n²`. Under support nondegeneracy, the objective decomposes into an inverse-scale penalty `ℬ_δ` and a misalignment penalty `ℛ_δ`. Feasible parameters attaining `ℋ = 3|δ| = 3n²` have unitary inputs and used outputs and lie on the **collinear set**, where `ℛ_δ = 0`; unused outputs need not be unitary.
+The norms are normalized Frobenius norms ($\|X\|^2 = \operatorname{Tr}(X^\dagger X)$). Every binary-operation table has support size `|supp(δ)| = n²`. Under support nondegeneracy, the objective decomposes into the Cauchy--Schwarz lower bound `ℬ_δ` and a nonnegative alignment gap `ℛ_δ = ℋ - ℬ_δ`. Feasible parameters attaining the universal complexity floor `ℋ = 3|supp(δ)| = 3n²` have unitary inputs and used outputs and lie on the **collinear set**, where `ℛ_δ = 0`; unused outputs need not be unitary.
 
 `SupportNondegenerate` and `SupportUnitaryCollinearFactorization` express nondegeneracy and unitary collinearity on participating slices for arbitrary operations. `Nondegenerate` and `UnitaryCollinear` constrain every slice, including unused outputs. The bridges `Nondegenerate.toSupport`, `SupportNondegenerate.of_quasigroup`, `UnitaryCollinear.toSupport`, and `SupportUnitaryCollinearFactorization.of_quasigroup` relate these predicates; on quasigroups the support-local and all-slice predicates are equivalent.
 
@@ -79,19 +79,19 @@ The norms are normalized Frobenius norms. Every binary-operation table has `|δ|
 | File | Description |
 | ------ | ------------- |
 | [Basic.lean](HyperCubeGroup/Foundation/Basic.lean) | Core definitions: `BinOp`, `HCParams`, `Factorizes`, `objective`, `frobInner`, `frobNormSq`, `SupportNondegenerate`; arbitrary-operation exact feasibility via `feasible_nonempty` |
-| [Decomposition.lean](HyperCubeGroup/Foundation/Decomposition.lean) | Objective decomposition `ℋ = ℬ_δ + ℛ_δ`, misalignment residuals |
-| [CollinearManifold.lean](HyperCubeGroup/Foundation/CollinearManifold.lean) | Quasigroup shared-Gram and common-κ interfaces; feasible unitary and lower-bound results |
-| [SupportGeometry.lean](HyperCubeGroup/Foundation/SupportGeometry.lean) | Arbitrary-operation support nondegeneracy, local Gram identities, common input Gram, projection identity, and slice-rank identification |
-| [SupportDecomposition.lean](HyperCubeGroup/Foundation/SupportDecomposition.lean) | Support-local decomposition and collinearity identities without global nondegeneracy |
-| [SupportInverseRank.lean](HyperCubeGroup/Foundation/SupportInverseRank.lean) | Arbitrary-operation collinear Gram and rank API; inverse-rank bounds, supported norm balancing, and dynamic-floor equality |
+| [Decomposition.lean](HyperCubeGroup/Foundation/Decomposition.lean) | Objective decomposition `ℋ = ℬ_δ + ℛ_δ`, alignment-gap residuals |
+| [CollinearManifold.lean](HyperCubeGroup/Foundation/CollinearManifold.lean) | Quasigroup shared-balancedness (normalized Gram) and common-κ interfaces; feasible unitary and lower-bound results |
+| [SupportGeometry.lean](HyperCubeGroup/Foundation/SupportGeometry.lean) | Arbitrary-operation support nondegeneracy, local normalized Gram identities, shared input Gram, projection identity, and slice-rank identification |
+| [SupportDecomposition.lean](HyperCubeGroup/Foundation/SupportDecomposition.lean) | Support-local Cauchy--Schwarz bound and collinearity identities without global nondegeneracy |
+| [SupportInverseRank.lean](HyperCubeGroup/Foundation/SupportInverseRank.lean) | Arbitrary-operation collinear Gram and rank API; inverse-rank bounds, supported norm balancing, and output-dependent bound equality |
 | [SupportGramRigidity.lean](HyperCubeGroup/Foundation/SupportGramRigidity.lean) | Positive semidefinite normalized Grams and `κ = 1` iff all supported normalized Grams are identity |
 | [SupportUnitary.lean](HyperCubeGroup/Foundation/SupportUnitary.lean) | Support unitary collinearity, arbitrary-operation feasible-floor equivalences and no-floor gaps, and bridges to all-slice quasigroup predicates |
-| [ScalarInverseRank.lean](HyperCubeGroup/Foundation/ScalarInverseRank.lean) | Scalar inverse-rank AM-GM inequality and sharp equality criterion |
-| [InverseRank.lean](HyperCubeGroup/Foundation/InverseRank.lean) | Quasigroup inverse-rank bound, global norm balancing, and dynamic-floor equality at κ = 1 |
-| [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Dynamic unconstrained bound, isotopy transfer, unitary equivalence, and feasible landscape bounds |
+| [ScalarInverseRank.lean](HyperCubeGroup/Foundation/ScalarInverseRank.lean) | Scalar inverse-rank AM--GM inequality and sharp equality criterion |
+| [InverseRank.lean](HyperCubeGroup/Foundation/InverseRank.lean) | Quasigroup inverse-rank bound, global norm balancing, and output-dependent bound equality at κ = 1 |
+| [GroupIsotope.lean](HyperCubeGroup/Foundation/GroupIsotope.lean) | Global output-dependent bound, isotopy transfer, unitary equivalence, and feasible-set lower bounds |
 | [GroupIsotopeRegression.lean](HyperCubeGroup/Foundation/GroupIsotopeRegression.lean) | Verified regression checks for group-isotope factorizations |
 | [GeneralCollinearity.lean](HyperCubeGroup/Foundation/GeneralCollinearity.lean) | Quasigroup collinearity equivalence via associative sandwich products and feasibility |
-| [FloorDichotomy.lean](HyperCubeGroup/Foundation/FloorDichotomy.lean) | Arbitrary-operation floor dichotomy, input-slice redundancy equivalences, and collision propagation |
+| [FloorDichotomy.lean](HyperCubeGroup/Foundation/FloorDichotomy.lean) | Arbitrary-operation input-redundancy characterization at the floor, input-slice equivalences, and collision propagation |
 | [ReducedTable.lean](HyperCubeGroup/Foundation/ReducedTable.lean) | Separate row/column quotients, cancellation rigidity, cardinality bounds, and used-output trace orthonormality |
 | [ExactStructure.lean](HyperCubeGroup/Foundation/ExactStructure.lean) | Exact floor iff reduced unitary data; factor-preserving descent, injectivity, gap criteria, and minimum-operation obstruction |
 | [InputQuotients.lean](HyperCubeGroup/Foundation/InputQuotients.lean) | Floor-independent deterministic alphabet and fixed-length binary bounds; unique injective quotient factorizations, including order zero |
@@ -102,7 +102,7 @@ The norms are normalized Frobenius norms. Every binary-operation table has `|δ|
 | [Representation/UnitaryMatrix.lean](HyperCubeGroup/Foundation/Representation/UnitaryMatrix.lean) | Shared unitary matrix type in `HyperCubeGroup.ThreeFamilySynchronization` |
 | [External/CharacterRigidity.lean](HyperCubeGroup/Foundation/External/CharacterRigidity.lean) | Licensed character-rigidity proof with its Apache 2.0 license in [External/LICENSE](HyperCubeGroup/Foundation/External/LICENSE) |
 | [Abelian.lean](HyperCubeGroup/Foundation/Abelian.lean) | Diagonal rep, full U(n)³ gauge invariance, cyclic group instance |
-| [MatrixAMGM.lean](HyperCubeGroup/Foundation/MatrixAMGM.lean) | Arbitrary-amplitude Matrix AM-GM, amplitude witness, and full equality characterization including zero trace |
+| [MatrixAMGM.lean](HyperCubeGroup/Foundation/MatrixAMGM.lean) | General Matrix AM--GM, amplitude witness, and full equality characterization including zero trace |
 | [BlockCyclic.lean](HyperCubeGroup/Foundation/BlockCyclic.lean) | Block-cyclic 3n×3n matrix construction; structural equivalences |
 | [Spectral.lean](HyperCubeGroup/Foundation/Spectral.lean) | Schur triangulation, trace bounds, equality cases |
 | [Plancherel.lean](HyperCubeGroup/Foundation/Plancherel.lean) | Plancherel infrastructure: ℋ = mass matrix form, Fourier sums |
@@ -121,9 +121,9 @@ All 36 files in this table live recursively under `HyperCubeGroup/Foundation` (1
 
 ## Core Formalized Results
 
-**Orthogonal Decomposition and Geometric Alignment (Section 3).** `support_decomposition` splits `ℋ = ℬ_δ + ℛ_δ` under support nondegeneracy. For arbitrary operations with collinearity and nonzero supported predictions, `support_collinear_shared_gram_matrices` and `support_local_gram_identities` give common input and cyclic local Gram geometry; `support_local_grams_posSemidef` supplies positive semidefiniteness. `support_collinear_rank_identification` identifies `nκ` with the rank of `Z = supportGram Θ`, every input slice, and every used output. `support_kappa_one_iff_local_normalized_grams_identity` characterizes κ = 1 by identity normalized Grams in both orientations. `support_collinear_inverse_rank_bound` and `support_collinear_dynamic_floor_eq_iff` prove the sharp bound and equality criteria, leaving unused outputs unrestricted. `collinear_lower_bound` is the feasible quasigroup inverse-rank bound.
+**Orthogonal Decomposition and Geometric Alignment (Section 3).** `support_decomposition` splits `ℋ = ℬ_δ + ℛ_δ` under support nondegeneracy. For arbitrary operations with collinearity and nonzero supported predictions, `support_collinear_shared_gram_matrices` and `support_local_gram_identities` give shared balancedness (`Z = supportGram Θ` and cyclic local normalized Gram identities); `support_local_grams_posSemidef` supplies positive semidefiniteness. `support_collinear_rank_identification` identifies `nκ` with the rank of `Z`, every input slice, and every used output. `support_kappa_one_iff_local_normalized_grams_identity` characterizes κ = 1 by identity normalized Grams in both orientations. `support_collinear_inverse_rank_bound` and `support_collinear_dynamic_floor_eq_iff` prove the collinear output-dependent bound and equality criteria, leaving unused outputs unrestricted. `collinear_lower_bound` is the feasible quasigroup inverse-rank bound.
 
-**Global Optimality and Associativity Gap (Sections 4–5).** `matrix_amgm_general` establishes Lemma 5's arbitrary-amplitude inequality; `matrix_amgm_general_equality_iff` proves equality at arbitrary trace. `dynamic_unconstrained_bound` proves Theorem 6. `absolute_feasible_bound_lower` and `support_absolute_feasible_bound_rigidity` prove Theorem 7's arbitrary-operation feasible floor and equality geometry; `absolute_feasible_bound_rigidity` gives the all-slice quasigroup formulation. `unitary_collinearity_iff_group_isotope` proves Theorem 9 for quasigroups. Theorem 10's `global_optimality_dichotomy` gives constructive floor attainment for group isotopes and strictness for nongroup-isotope quasigroups via `strict_gap_non_group`. Theorem 8 gives a positive gap uniform over all nonattaining targets of each fixed order.
+**Global Lower Bounds, Complexity Floor, and Quasigroup Optimality (Sections 4–5).** `matrix_amgm_general` establishes Lemma 5's general Matrix AM--GM inequality; `matrix_amgm_general_equality_iff` proves equality at arbitrary trace. `dynamic_unconstrained_bound` proves Theorem 6's global output-dependent bound. `absolute_feasible_bound_lower` and `support_absolute_feasible_bound_rigidity` prove Theorem 7's arbitrary-operation universal complexity floor (`3|supp(δ)| = 3n²`) and equality geometry; `absolute_feasible_bound_rigidity` gives the all-slice quasigroup formulation. `unitary_collinearity_iff_group_isotope` proves Theorem 9 for quasigroups. Theorem 10's `global_optimality_dichotomy` gives constructive floor attainment for group isotopes and strictness for nongroup-isotope quasigroups via `strict_gap_non_group`. Theorem 8 gives a positive infimum gap uniform over all nonattaining targets of each fixed order.
 
 `IsGroupIsotope f` means that `f` is isotopic to an **associative quasigroup**, hence to a finite group. `IsAssociativeIsotope f` means that `f` is isotopic to an associative operation, without a cancellation requirement. The two conditions coincide for quasigroup targets, but not for arbitrary operations.
 
@@ -149,16 +149,16 @@ These library results are not numbered statements in the manuscript:
 - `Tikhonov.regularized_existence` ([Tikhonov.lean](HyperCubeGroup/Foundation/Tikhonov.lean)): existence for the coercively regularized objective.
 - Active-subspace ([ActiveSubspace.lean](HyperCubeGroup/Foundation/ActiveSubspace.lean), [ActiveSubspaceConstruction.lean](HyperCubeGroup/Foundation/ActiveSubspaceConstruction.lean), [ActiveSubspaceGeneric.lean](HyperCubeGroup/Foundation/ActiveSubspaceGeneric.lean)), abelian/Fourier ([Abelian.lean](HyperCubeGroup/Foundation/Abelian.lean), [Plancherel.lean](HyperCubeGroup/Foundation/Plancherel.lean), [PontryaginBridge.lean](HyperCubeGroup/Foundation/PontryaginBridge.lean)), input-quotient encoding ([InputQuotients.lean](HyperCubeGroup/Foundation/InputQuotients.lean)), and gauge-quotient ([Coercivity.lean](HyperCubeGroup/Foundation/Coercivity.lean)) infrastructure extend the foundational results.
 
-## Arbitrary Binary Operations
+## General Binary Operations (Beyond Quasigroups)
 
-The support modules listed above and the results in [FloorDichotomy.lean](HyperCubeGroup/Foundation/FloorDichotomy.lean), [ReducedTable.lean](HyperCubeGroup/Foundation/ReducedTable.lean), and [UniformGap.lean](HyperCubeGroup/Foundation/UniformGap.lean), together with the general results in [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean), accept any finite total binary operation `f : BinOp n`. The support API, floor, and gap statements assume positive order, expressed by `[NeZero n]`, and exact feasibility means reconstruction at every input/output triple, not just on support. The floor-dichotomy, reduced-table, and uniform-gap modules use the `FloorDichotomy` namespace; the normalization and no-floor gap declarations use `PositiveGap`.
+The support modules listed above and the results in [FloorDichotomy.lean](HyperCubeGroup/Foundation/FloorDichotomy.lean), [ReducedTable.lean](HyperCubeGroup/Foundation/ReducedTable.lean), and [UniformGap.lean](HyperCubeGroup/Foundation/UniformGap.lean), together with the general results in [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean), accept any finite total binary operation `f : BinOp n`. The support API, floor, and gap statements assume positive order, expressed by `[NeZero n]`, and exact feasibility means reconstruction at every input/output triple, not just on support. The input-redundancy, reduced-table, and uniform-gap modules use the `FloorDichotomy` namespace; the normalization and no-floor gap declarations use `PositiveGap`.
 
 `feasible_nonempty` in [Basic.lean](HyperCubeGroup/Foundation/Basic.lean) constructs an exact factorization for every such operation, without quasigroup or output-surjectivity assumptions.
-<!-- With matrix units $E_{ij}$, it takes $A_a=nE_{0a}$, $(B_b)_{ij}=\mathbf1_{\{f(i,b)=j\}}$, and $C_c=E_{c0}$, giving $n^{-1}\operatorname{Tr}(A_aB_bC_c)=\mathbf1_{\{f(a,b)=c\}}$. -->
+<!-- With matrix units $E_{ij}$, it takes $A_a=nE_{0a}$, $(B_b)_{ij}=\mathbb I_{\{f(i,b)=j\}}$, and $C_c=E_{c0}$, giving $\operatorname{Tr}(A_aB_bC_c)=n^{-1}\operatorname{Trace}(A_aB_bC_c)=\mathbb I_{\{f(a,b)=c\}}$. -->
 
-The one-hot operation tensor has `|supp(δ)| = n²` for every binary operation. These results use the support-weighted objective; replacing it by three unweighted all-pairs sums requires quasigroup structure. Lemma 1's `support_decomposition` requires only support nondegeneracy; `decomposition` and `objective_ge_inverseScalePenalty` require global nondegeneracy. Lemmas 2–4 apply to arbitrary operations with collinearity and nonzero supported predictions, without constraints on unused outputs. Matrix and spectral bounds have no target-operation assumption, and `dynamic_unconstrained_bound` requires neither feasibility nor nondegeneracy. Theorem 7's `universal_lower_bound_general` gives `ℋ ≥ 3n²` under feasibility; `equality_rigidity_general` forces unitary input slices, unitary **used** output slices, and the supported product identity, and `support_absolute_feasible_bound_rigidity` packages this as an iff with `SupportUnitaryCollinearFactorization`. Unused output slices need not be unitary.
+The one-hot operation tensor has `|supp(δ)| = n²` for every binary operation. These results use the support-weighted objective; replacing it by three unweighted all-pairs sums requires quasigroup structure. Lemma 1's `support_decomposition` requires only support nondegeneracy; `decomposition` and `objective_ge_inverseScalePenalty` require global nondegeneracy. Lemmas 2–4 apply to arbitrary operations with collinearity and nonzero supported predictions, without constraints on unused outputs. Matrix and spectral bounds have no target-operation assumption, and `dynamic_unconstrained_bound` requires neither feasibility nor nondegeneracy. Theorem 7's `universal_lower_bound_general` gives `ℋ ≥ 3|supp(δ)| = 3n²` under feasibility; `equality_rigidity_general` forces unitary input slices, unitary **used** output slices, and the supported product identity, and `support_absolute_feasible_bound_rigidity` packages this as an iff with `SupportUnitaryCollinearFactorization`. Unused output slices need not be unitary.
 
-### Floor Attainment and Redundancy
+### Floor Attainment and Input Redundancy
 
 Theorem 19's `floor_group_isotope_or_redundancy` proves, without a quasigroup premise,
 
@@ -172,7 +172,7 @@ $$
 
 ### Reduced Tables and Cancellation Rigidity
 
-`RowClass` and `ColumnClass` quotient labels by identical entire rows and columns separately, and `UsedOutput` contains the labels occurring in the table. The well-defined `reducedTable` induces
+`RowClass` and `ColumnClass` quotient labels by identical entire rows and columns separately, and `UsedOutput` contains the labels occurring in the table (`U_∘` in the manuscript). The well-defined `reducedTable` induces
 
 $$\bar f:(Q/{\sim_R})\times(Q/{\sim_C})\longrightarrow\operatorname{im}(f).$$
 
@@ -182,7 +182,7 @@ $$\max(r,s)\le t\le rs.$$
 
 The three cardinalities can differ, so this need not be a Latin square or a common quotient operation; no associativity or group structure is asserted. Theorem 22 additionally gives orthonormal used-output slices at the floor:
 
-$$\frac1n\operatorname{Tr}(C_x^\dagger C_y)=\mathbf1_{\{x=y\}}\qquad(x,y\in\operatorname{im}(f)).$$
+$$\operatorname{Tr}(C_x^\dagger C_y)=\frac1n\operatorname{Trace}(C_x^\dagger C_y)=\mathbb I_{\{x=y\}}\qquad(x,y\in\operatorname{im}(f)).$$
 
 Theorem 9's group-isotope equivalence requires quasigroups; Lemmas 1–4 and Theorem 7 use the general support interface.
 These results concern operation tensors, not arbitrary nonnegative weighted tensors.
@@ -206,7 +206,7 @@ The exact reduced-factorization criterion is Theorem 11 (Section 6 and Appendix 
 
 For `f : BinOp n` with `[NeZero n]`, [ExactStructure.lean](HyperCubeGroup/Foundation/ExactStructure.lean) defines `ReducedUnitaryFactorization f`. Its maps `rowFactor : RowClass f → Matrix (Fin n) (Fin n) ℂ`, `columnFactor : ColumnClass f → Matrix (Fin n) (Fin n) ℂ`, and `outputFactor : UsedOutput f → Matrix (Fin n) (Fin n) ℂ` take unitary values, with
 
-$$U_R V_S = W_{\bar f(R,S)}^\dagger,\qquad \frac1n\operatorname{Tr}(W_x^\dagger W_y)=\mathbf1_{\{x=y\}}.$$
+$$U_R V_S = W_{\bar f(R,S)}^\dagger,\qquad \operatorname{Tr}(W_x^\dagger W_y)=\frac1n\operatorname{Trace}(W_x^\dagger W_y)=\mathbb I_{\{x=y\}}.$$
 
 `floor_iff_reduced_unitary_factorization` states exactly
 
@@ -263,7 +263,7 @@ Foundation modules compile without `sorryAx` or project axioms. All existing axi
 
 ## Scope of Formalization (What is not Mechanized)
 
-The manuscript coverage includes the **algebraic and geometric** results in Sections 2–6 and Appendices B, C, and E: Proposition 0, Lemmas 1–4, and Theorems 6–7 for arbitrary binary operations through the support interface; Lemma 5 and Lemma 16 for matrix and spectral bounds; Lemma 17's analytic no-escape and Theorem 8's fixed-target and fixed-order exact-fit gaps and floor-or-infimum-gap dichotomy for all finite binary operations; Theorems 9–10 and Lemmas 12–15 for quasigroup unitary collinearity, global optimality, and representation classification; and Theorems 11, 18–19, 21–22, and Corollary 20 for arbitrary operation tensors.
+The manuscript coverage includes the **algebraic and geometric** results in Sections 2–6 and Appendices B, C, and E: Proposition 0, Lemmas 1–4, and Theorems 6–7 for arbitrary binary operations through the support interface; Lemma 5 and Lemma 16 for matrix and spectral bounds; Lemma 17's analytic no-escape and Theorem 8's fixed-target and fixed-order positive infimum gaps and floor-or-infimum-gap characterization for all finite binary operations; Theorems 9–10 and Lemmas 12–15 for quasigroup unitary collinearity, global optimality, and representation classification; and Theorems 11, 18–19, 21–22, and Corollary 20 for arbitrary operation tensors.
 The following manuscript components are outside the scope of formalization:
 
 - **Empirical results and training dynamics:** empirical optimization trajectories and training-endpoint statistics (Section 5.1 & Appendix D) are not formalized by these algebraic results.
@@ -275,7 +275,7 @@ The following manuscript components are outside the scope of formalization:
 The codebase contains several pieces of independent interest to the broader Lean / Mathlib community that are fully proved here and would naturally live upstream:
 
 1. **Unitary Schur triangulation** (`matrix_unitary_schur_form`): `∃ U unitary, U†·A·U is upper triangular for any complex A`. Currently absent in Mathlib.
-2. **Schur trace bound** (`IsUpperTriangular.norm_trace_cubed_pow_four_le`): `‖Tr(T³)‖⁴ ≤ N·(‖T·T‖²_F)³` for upper triangular `T`.
+2. **Schur trace bound** (`IsUpperTriangular.norm_trace_cubed_pow_four_le`): `‖Trace(T³)‖⁴ ≤ N·(‖T·T‖²_F)³` for upper triangular `T` (unnormalized trace/Frobenius norm).
 3. **Power-mean Hölder bound** (`Real.sum_pow_three_pow_four_le`): `(Σ f_i³)⁴ ≤ N · (Σ f_i⁴)³` for nonneg real `f`.
 4. **`AddCommGroup (Fin n)` bridge**: Constructs the abelian-group typeclass directly from a finite quasigroup's cancellation laws (`IsAbelianGroup.toAddCommGroup`).
 
