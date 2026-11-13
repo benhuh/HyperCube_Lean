@@ -38,7 +38,7 @@ For each named theorem below, `#print axioms <name>` uses only standard Lean bac
 
 Theorem 6 proves the global output-dependent lower bound
 
-$$\mathcal H(\Theta)\ge \mathcal H^*_\delta(T(\Theta)) \coloneqq 3\sum_{\text{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
+$$\mathcal H(\Theta)\ge \mathcal H^*_\delta(T(\Theta)) := 3\sum_{\text{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
 
 This includes vanishing supported predictions. Under exact factorization ($T(\Theta)=\delta$), `dynamicFloor_eq_of_factorizes` reduces the bound to the universal complexity floor `3|supp(δ)| = 3n²`; Theorem 7 supplies its feasible equality characterization.
 
@@ -62,7 +62,7 @@ The feasible landscape results hold on the combined gauge quotient `Coercivity.F
 
 ## Overview
 
-We formalize the theory of factorization parameters `Θ = (A, B, C)` where the structure tensor $\delta$ of a finite binary operation `(Q, ∘)` of positive order `n` is modeled (using normalized trace $\text{Tr}(X) \coloneqq \frac{1}{n}\text{Trace}(X)$) by:
+We formalize the theory of factorization parameters `Θ = (A, B, C)` where the structure tensor $\delta$ of a finite binary operation `(Q, ∘)` of positive order `n` is modeled (using normalized trace $\text{Tr}(X) := \frac{1}{n}\text{Trace}(X)$) by:
 
 $$T_{abc}(\Theta) = \text{Tr}(A_a B_b C_c) = \frac{1}{n} \text{Trace}(A_a B_b C_c)$$
 
