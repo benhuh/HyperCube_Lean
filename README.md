@@ -38,13 +38,13 @@ For each named theorem below, `#print axioms <name>` uses only standard Lean bac
 
 Theorem 6 proves the global output-dependent lower bound
 
-$$\mathcal H(\Theta)\ge \mathcal H^*_\delta(T(\Theta)) := 3\sum_{\operatorname{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
+$$\mathcal H(\Theta)\ge \mathcal H^*_\delta(T(\Theta)) \coloneqq 3\sum_{\text{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
 
 This includes vanishing supported predictions. Under exact factorization ($T(\Theta)=\delta$), `dynamicFloor_eq_of_factorizes` reduces the bound to the universal complexity floor `3|supp(δ)| = 3n²`; Theorem 7 supplies its feasible equality characterization.
 
 On the collinear set with nonzero supported predictions, Lemma 4 proves
 
-$$\mathcal H(\Theta)=\mathcal B_\delta(\Theta)\ge \kappa^{-1/3}\,\mathcal H^*_\delta(T(\Theta)) = 3\kappa^{-1/3}\sum_{\operatorname{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
+$$\mathcal H(\Theta)=\mathcal B_\delta(\Theta)\ge \kappa^{-1/3}\,\mathcal H^*_\delta(T(\Theta)) = 3\kappa^{-1/3}\sum_{\text{supp}(\delta)}|T_{abc}(\Theta)|^{4/3}.$$
 
 Equality in this sharper bound holds exactly when input and used-output squared norms are balanced: for every `a,b`, `frobNormSq (A_a) = frobNormSq (B_b) = frobNormSq (C_{f(a,b)})`. Unused output slices are unrestricted. Equality with the unpenalized output-dependent bound $\mathcal H^*_\delta(T(\Theta))$ additionally requires `κ = 1`.
 
@@ -62,15 +62,15 @@ The feasible landscape results hold on the combined gauge quotient `Coercivity.F
 
 ## Overview
 
-We formalize the theory of factorization parameters `Θ = (A, B, C)` where the structure tensor $\delta$ of a finite binary operation `(Q, ∘)` of positive order `n` is modeled (using normalized trace $\operatorname{Tr}(X) := \frac{1}{n}\operatorname{Trace}(X)$) by:
+We formalize the theory of factorization parameters `Θ = (A, B, C)` where the structure tensor $\delta$ of a finite binary operation `(Q, ∘)` of positive order `n` is modeled (using normalized trace $\text{Tr}(X) \coloneqq \frac{1}{n}\text{Trace}(X)$) by:
 
-$$T_{abc}(\Theta) = \operatorname{Tr}(A_a B_b C_c) = \frac{1}{n} \operatorname{Trace}(A_a B_b C_c)$$
+$$T_{abc}(\Theta) = \text{Tr}(A_a B_b C_c) = \frac{1}{n} \text{Trace}(A_a B_b C_c)$$
 
 The sensitivity objective is:
 
-$$\mathcal H (\Theta) = \sum_{(a,b,c)\in\operatorname{supp}(\delta)} n \, \| \nabla_\Theta T_{abc}(\Theta)\|^2 = \sum_{\operatorname{supp}(\delta)} \big( \|B_b C_c\|^2 + \| C_c A_a \|^2 + \| A_a B_b \|^2 \big)$$
+$$\mathcal H (\Theta) = \sum_{(a,b,c)\in\text{supp}(\delta)} n \, \| \nabla_\Theta T_{abc}(\Theta)\|^2 = \sum_{\text{supp}(\delta)} \big( \|B_b C_c\|^2 + \| C_c A_a \|^2 + \| A_a B_b \|^2 \big)$$
 
-The norms are normalized Frobenius norms ($\|X\|^2 = \operatorname{Tr}(X^\dagger X)$). Every binary-operation table has support size `|supp(δ)| = n²`. Under support nondegeneracy, the objective decomposes into the Cauchy--Schwarz lower bound `ℬ_δ` and a nonnegative alignment gap `ℛ_δ = ℋ - ℬ_δ`. Feasible parameters attaining the universal complexity floor `ℋ = 3|supp(δ)| = 3n²` have unitary inputs and used outputs and lie on the **collinear set**, where `ℛ_δ = 0`; unused outputs need not be unitary.
+The norms are normalized Frobenius norms ($\|X\|^2 = \text{Tr}(X^\dagger X)$). Every binary-operation table has support size `|supp(δ)| = n²`. Under support nondegeneracy, the objective decomposes into the Cauchy--Schwarz lower bound `ℬ_δ` and a nonnegative alignment gap `ℛ_δ = ℋ - ℬ_δ`. Feasible parameters attaining the universal complexity floor `ℋ = 3|supp(δ)| = 3n²` have unitary inputs and used outputs and lie on the **collinear set**, where `ℛ_δ = 0`; unused outputs need not be unitary.
 
 `SupportNondegenerate` and `SupportUnitaryCollinearFactorization` express nondegeneracy and unitary collinearity on participating slices for arbitrary operations. `Nondegenerate` and `UnitaryCollinear` constrain every slice, including unused outputs. The bridges `Nondegenerate.toSupport`, `SupportNondegenerate.of_quasigroup`, `UnitaryCollinear.toSupport`, and `SupportUnitaryCollinearFactorization.of_quasigroup` relate these predicates; on quasigroups the support-local and all-slice predicates are equivalent.
 
@@ -131,9 +131,9 @@ All 36 files in this table live recursively under `HyperCubeGroup/Foundation` (1
 
 `PositiveGap.exists_gap_fixed_order_of_no_floor` chooses a single positive constant before every target and feasible parameter:
 
-$$\forall n\ge 1,\quad \exists\varepsilon_n>0,\quad \forall f,\quad \operatorname{NoFloor}(f)\Longrightarrow\forall\Theta,\quad \operatorname{Factorizes}(\Theta,f)\Longrightarrow\mathcal H_f(\Theta)\ge 3n^2+\varepsilon_n.$$
+$$\forall n\ge 1,\quad \exists\varepsilon_n>0,\quad \forall f,\quad \text{NoFloor}(f)\Longrightarrow\forall\Theta,\quad \text{Factorizes}(\Theta,f)\Longrightarrow\mathcal H_f(\Theta)\ge 3n^2+\varepsilon_n.$$
 
-Here `f : BinOp n`, `Θ : HCParams n`, and `[NeZero n]` expresses positive order. `Factorizes` imposes all-output exact reconstruction of the fully observed table, and $\operatorname{NoFloor}(f)$ means that every feasible $\Theta$ has $\mathcal H_f(\Theta)\ne 3n^2$. No quasigroup assumption is required. Nongroup-isotope operations can attain the floor, so failure to be a group isotope alone is not the general gap hypothesis.
+Here `f : BinOp n`, `Θ : HCParams n`, and `[NeZero n]` expresses positive order. `Factorizes` imposes all-output exact reconstruction of the fully observed table, and $\text{NoFloor}(f)$ means that every feasible $\Theta$ has $\mathcal H_f(\Theta)\ne 3n^2$. No quasigroup assumption is required. Nongroup-isotope operations can attain the floor, so failure to be a group isotope alone is not the general gap hypothesis.
 
 `PositiveGap.exists_infimum_gap_fixed_order_of_no_floor` gives a common positive epsilon bounding `sInf (PositiveGap.feasibleObjectiveValues f)` below by $3n^2+\varepsilon_n$ for all no-floor operations of that order. `PositiveGap.floor_or_infimum_gap_fixed_order` chooses one positive epsilon before all operations and proves that each either has a feasible floor point or satisfies this infimum bound. The feasible-value and infimum bounds can use the same epsilon. The constant may depend on `n`; orders with no eligible targets have a positive constant and a vacuous no-floor conclusion. Neither attainment of a higher-energy infimum nor a gap independent of `n` is proved.
 
@@ -154,7 +154,7 @@ These library results are not numbered statements in the manuscript:
 The support modules listed above and the results in [FloorDichotomy.lean](HyperCubeGroup/Foundation/FloorDichotomy.lean), [ReducedTable.lean](HyperCubeGroup/Foundation/ReducedTable.lean), and [UniformGap.lean](HyperCubeGroup/Foundation/UniformGap.lean), together with the general results in [PositiveGap.lean](HyperCubeGroup/Foundation/PositiveGap.lean), accept any finite total binary operation `f : BinOp n`. The support API, floor, and gap statements assume positive order, expressed by `[NeZero n]`, and exact feasibility means reconstruction at every input/output triple, not just on support. The input-redundancy, reduced-table, and uniform-gap modules use the `FloorDichotomy` namespace; the normalization and no-floor gap declarations use `PositiveGap`.
 
 `feasible_nonempty` in [Basic.lean](HyperCubeGroup/Foundation/Basic.lean) constructs an exact factorization for every such operation, without quasigroup or output-surjectivity assumptions.
-<!-- With matrix units $E_{ij}$, it takes $A_a=nE_{0a}$, $(B_b)_{ij}=\mathbb I_{\{f(i,b)=j\}}$, and $C_c=E_{c0}$, giving $\operatorname{Tr}(A_aB_bC_c)=n^{-1}\operatorname{Trace}(A_aB_bC_c)=\mathbb I_{\{f(a,b)=c\}}$. -->
+<!-- With matrix units $E_{ij}$, it takes $A_a=nE_{0a}$, $(B_b)_{ij}=\mathbb I_{\{f(i,b)=j\}}$, and $C_c=E_{c0}$, giving $\text{Tr}(A_aB_bC_c)=n^{-1}\text{Trace}(A_aB_bC_c)=\mathbb I_{\{f(a,b)=c\}}$. -->
 
 The one-hot operation tensor has `|supp(δ)| = n²` for every binary operation. These results use the support-weighted objective; replacing it by three unweighted all-pairs sums requires quasigroup structure. Lemma 1's `support_decomposition` requires only support nondegeneracy; `decomposition` and `objective_ge_inverseScalePenalty` require global nondegeneracy. Lemmas 2–4 apply to arbitrary operations with collinearity and nonzero supported predictions, without constraints on unused outputs. Matrix and spectral bounds have no target-operation assumption, and `dynamic_unconstrained_bound` requires neither feasibility nor nondegeneracy. Theorem 7's `universal_lower_bound_general` gives `ℋ ≥ 3|supp(δ)| = 3n²` under feasibility; `equality_rigidity_general` forces unitary input slices, unitary **used** output slices, and the supported product identity, and `support_absolute_feasible_bound_rigidity` packages this as an iff with `SupportUnitaryCollinearFactorization`. Unused output slices need not be unitary.
 
@@ -163,9 +163,9 @@ The one-hot operation tensor has `|supp(δ)| = n²` for every binary operation. 
 Theorem 19's `floor_group_isotope_or_redundancy` proves, without a quasigroup premise,
 
 $$
-\operatorname{Factorizes}(\Theta,f)\land\mathcal H_f(\Theta)=3n^2
+\text{Factorizes}(\Theta,f)\land\mathcal H_f(\Theta)=3n^2
 \Longrightarrow
-\operatorname{IsGroupIsotope}(f)\lor\operatorname{RepeatedRows}(f)\lor\operatorname{RepeatedColumns}(f).
+\text{IsGroupIsotope}(f)\lor\text{RepeatedRows}(f)\lor\text{RepeatedColumns}(f).
 $$
 
 `RepeatedRows` and `RepeatedColumns` mean identical entire rows or columns with distinct labels, not rank deficiency. Theorem 18 identifies these repetitions exactly with equal input slices at the floor and proves that a collision at one input propagates to equality of entire columns or rows. Consequently, at a feasible floor point, absence of both repeated rows and repeated columns (or injectivity of both input slice families) forces a group isotope. The converse is not asserted for redundant tables: redundancy alone does not guarantee floor attainment.
@@ -174,7 +174,7 @@ $$
 
 `RowClass` and `ColumnClass` quotient labels by identical entire rows and columns separately, and `UsedOutput` contains the labels occurring in the table (`U_∘` in the manuscript). The well-defined `reducedTable` induces
 
-$$\bar f:(Q/{\sim_R})\times(Q/{\sim_C})\longrightarrow\operatorname{im}(f).$$
+$$\bar f:(Q/{\sim_R})\times(Q/{\sim_C})\longrightarrow\text{im}(f).$$
 
 This map is always well-defined and surjective. At an exactly feasible floor point, Theorem 21 gives injectivity in each argument and, for row-class, column-class, and used-output counts `r`, `s`, and `t`,
 
@@ -182,14 +182,14 @@ $$\max(r,s)\le t\le rs.$$
 
 The three cardinalities can differ, so this need not be a Latin square or a common quotient operation; no associativity or group structure is asserted. Theorem 22 additionally gives orthonormal used-output slices at the floor:
 
-$$\operatorname{Tr}(C_x^\dagger C_y)=\frac1n\operatorname{Trace}(C_x^\dagger C_y)=\mathbb I_{\{x=y\}}\qquad(x,y\in\operatorname{im}(f)).$$
+$$\text{Tr}(C_x^\dagger C_y)=\frac1n\text{Trace}(C_x^\dagger C_y)=\mathbb I_{\{x=y\}}\qquad(x,y\in\text{im}(f)).$$
 
 Theorem 9's group-isotope equivalence requires quasigroups; Lemmas 1–4 and Theorem 7 use the general support interface.
 These results concern operation tensors, not arbitrary nonnegative weighted tensors.
 
 ### General Fixed-Target Uniform Gaps (Theorem 8 and Corollary 20)
 
-For any positive-order operation, let $V_f=\{\mathcal H_f(\Theta):\operatorname{Factorizes}(\Theta,f)\}$. This set is nonempty and bounded below. If no exact factorization attains $3n^2$, Theorem 8's `PositiveGap.exists_gap_of_no_floor` and `PositiveGap.exists_infimum_gap_of_no_floor` prove
+For any positive-order operation, let $V_f=\{\mathcal H_f(\Theta):\text{Factorizes}(\Theta,f)\}$. This set is nonempty and bounded below. If no exact factorization attains $3n^2$, Theorem 8's `PositiveGap.exists_gap_of_no_floor` and `PositiveGap.exists_infimum_gap_of_no_floor` prove
 
 $$\exists\varepsilon_f>0,\quad 3n^2+\varepsilon_f\le\inf V_f\le\mathcal H_f(\Theta)\qquad\text{for every feasible }\Theta.$$
 
@@ -206,7 +206,7 @@ The exact reduced-factorization criterion is Theorem 11 (Section 6 and Appendix 
 
 For `f : BinOp n` with `[NeZero n]`, [ExactStructure.lean](HyperCubeGroup/Foundation/ExactStructure.lean) defines `ReducedUnitaryFactorization f`. Its maps `rowFactor : RowClass f → Matrix (Fin n) (Fin n) ℂ`, `columnFactor : ColumnClass f → Matrix (Fin n) (Fin n) ℂ`, and `outputFactor : UsedOutput f → Matrix (Fin n) (Fin n) ℂ` take unitary values, with
 
-$$U_R V_S = W_{\bar f(R,S)}^\dagger,\qquad \operatorname{Tr}(W_x^\dagger W_y)=\frac1n\operatorname{Trace}(W_x^\dagger W_y)=\mathbb I_{\{x=y\}}.$$
+$$U_R V_S = W_{\bar f(R,S)}^\dagger,\qquad \text{Tr}(W_x^\dagger W_y)=\frac1n\text{Trace}(W_x^\dagger W_y)=\mathbb I_{\{x=y\}}.$$
 
 `floor_iff_reduced_unitary_factorization` states exactly
 
@@ -221,7 +221,7 @@ $$U_R V_S = W_{\bar f(R,S)}^\dagger,\qquad \operatorname{Tr}(W_x^\dagger W_y)=\f
 
 [InputQuotients.lean](HyperCubeGroup/Foundation/InputQuotients.lean) is independent of floor attainment: its results apply to arbitrary `f : BinOp n`, including `n = 0`, without `[NeZero n]`. Given separate encoders `encRow : Fin n → α`, `encCol : Fin n → β` and a decoder satisfying `decode (encRow row) (encCol column) = f.op row column` for every pair, `deterministic_encoding_card_bounds` proves, for finite alphabets,
 
-$$r=\operatorname{Nat.card}(\operatorname{RowClass} f)\le\operatorname{Nat.card}(\alpha),\qquad s=\operatorname{Nat.card}(\operatorname{ColumnClass} f)\le\operatorname{Nat.card}(\beta).$$
+$$r=\text{Nat.card}(\text{RowClass} f)\le\text{Nat.card}(\alpha),\qquad s=\text{Nat.card}(\text{ColumnClass} f)\le\text{Nat.card}(\beta).$$
 
 `fixed_length_binary_encoding_card_bounds` specializes to alphabets `Fin rowBits → Bool` and `Fin columnBits → Bool`, giving `r ≤ 2^rowBits` and `s ≤ 2^columnBits`. `row_encoding_factors_uniquely` and `column_encoding_factors_uniquely` each require an encoder constant on identical entire profiles and distinguishing different profiles; they yield a unique injective map from the corresponding quotient through which that encoder factors.
 
